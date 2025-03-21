@@ -1,0 +1,86 @@
+const ngosData = [
+    {
+      id: 1,
+      name: "Helping Hands Foundation",
+      description: "Providing shelter and education to underprivileged children.",
+      location: "Mumbai, India",
+      contact: "+91 98765 43210",
+      website: "https://helpinghands.org",
+    },
+    {
+      id: 2,
+      name: "Smile Foundation",
+      description: "Empowering women and children through education and healthcare.",
+      location: "Delhi, India",
+      contact: "+91 98765 67890",
+      website: "https://smilefoundation.org",
+    },
+    {
+      id: 3,
+      name: "Goonj",
+      description: "A grassroots movement for material recycling and rural development.",
+      location: "Kolkata, India",
+      contact: "+91 98765 34567",
+      website: "https://goonj.org",
+    },
+    {
+      id: 4,
+      name: "Teach For India",
+      description: "Transforming education by placing young leaders in classrooms.",
+      location: "Pune, India",
+      contact: "+91 98765 12345",
+      website: "https://teachforindia.org",
+    },
+
+    {
+      id: 5,
+      name: "Pratham",
+      description: "Improving learning outcomes for children across India. Lorem ipsum dolor sit amet",
+      location: "Ahmedabad, India",
+      contact: "+91 98765 56789",
+      website: "https://pratham.org",
+    },
+    {
+      id: 6,
+      name: "Uday Foundation",
+      description: "Providing food, shelter, and healthcare to the homeless.",
+      location: "Bangalore, India",
+      contact: "+91 98765 89012",
+      website: "https://udayfoundation.org",
+    },
+    {
+      id: 7,
+      name: "Nanhi Kali",
+      description: "Supporting the education of underprivileged girls in India.",
+      location: "Chennai, India",
+      contact: "+91 98765 65432",
+      website: "https://nanhikali.org",
+    },
+    {
+      id: 8,
+      name: "Akshaya Patra",
+      description: "Providing mid-day meals to millions of children in government schools.",
+      location: "Hyderabad, India",
+      contact: "+91 98765 90876",
+      website: "https://akshayapatra.org",
+    },
+    {
+      id: 9,
+      name: "Save The Children",
+      description: "Working for children's rights and welfare worldwide.",
+      location: "Jaipur, India",
+      contact: "+91 98765 43298",
+      website: "https://savethechildren.in",
+    },
+    {
+      id: 10,
+      name: "Give India",
+      description: "A donation platform supporting various causes and NGOs in India.",
+      location: "Lucknow, India",
+      contact: "+91 98765 12987",
+      website: "https://giveindia.org",
+    },
+  ];
+  
+  export default ngosData;
+  

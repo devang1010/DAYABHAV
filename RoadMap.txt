@@ -1,0 +1,51 @@
+📂 src
+ ┣ 📂 screens
+ ┃ ┣ 📂 Auth
+ ┃ ┃ ┣ 📄 LoginScreen.js
+ ┃ ┃ ┣ 📄 RegisterScreen.js
+ ┃ ┃ ┗ 📄 ForgotPasswordScreen.js
+ ┃ ┣ 📂 Home
+ ┃ ┃ ┗ 📄 HomeScreen.js
+ ┃ ┣ 📂 Donation
+ ┃ ┃ ┣ 📄 DonateItemScreen.js
+ ┃ ┃ ┣ 📄 DonationHistoryScreen.js
+ ┃ ┃ ┗ 📄 DonationDetailsScreen.js
+ ┃ ┣ 📂 NGO
+ ┃ ┃ ┣ 📄 NGOListScreen.js
+ ┃ ┃ ┗ 📄 NGODetailsScreen.js
+ ┃ ┣ 📂 Profile
+ ┃ ┃ ┗ 📄 ProfileScreen.js
+ ┃ ┗ 📂 Misc
+ ┃ ┃ ┣ 📄 AboutUsScreen.js
+ ┃ ┃ ┗ 📄 ContactUsScreen.js
+ ┣ 📂 components
+ ┃ ┣ 📄 CustomButton.js
+ ┃ ┣ 📄 InputField.js
+ ┃ ┗ 📄 DonationCard.js
+ ┣ 📂 navigation
+ ┃ ┗ 📄 AppNavigator.js
+ ┣ 📂 assets
+ ┃ ┣ 📂 images
+ ┃ ┣ 📂 icons
+ ┃ ┗ 📂 fonts
+ ┗ 📄 App.js
+
+📱 Screens Overview
+🔹 Authentication Screens
+        LoginScreen.js → Users log in.
+        RegisterScreen.js → New users register.
+        ForgotPasswordScreen.js → Reset password.
+🔹 Home Screens
+        HomeScreen.js → Displays featured NGOs, donation requests, and user actions.
+🔹 Donation Screens
+        DonateItemScreen.js → Users upload details of items they want to donate.
+        DonationHistoryScreen.js → Shows a list of previous donations.
+        DonationDetailsScreen.js → View details of a specific donation.
+🔹 NGO Screens
+        NGOListScreen.js → Displays a list of available NGOs.
+        NGODetailsScreen.js → Detailed information about an NGO.
+🔹 Profile Screens
+        ProfileScreen.js → Users view/edit their profile.
+🔹 Miscellaneous Screens
+        AboutUsScreen.js → Info about the app and mission.
+        ContactUsScreen.js → Contact form for inquiries

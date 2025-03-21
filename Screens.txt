@@ -1,0 +1,210 @@
+                                    AdminScreen
+------------------------------------Login Screen--------------------------------
+Add the data of admin directly in the database with role id -> 1
+then just login and check the role id and show the HomeScreen according to the role
+                                
+------------------------------------UserScreen--------------------------------
+List of all the users with delete button
+
+-------------------------------------NgoScreen--------------------------------
+List of all the ngos with deletion button
+
+--------------------------------------ItemScreen--------------------------------
+List of all the items with delete button
+____________________________________________________________________________________
+-----------------------------------AboutUs Screen ✅ ------------------------------------
+Navbar((Icon or ToggleButton(left), Name of plateform, Account profile(Right)))
+Heading of the Applicaton
+the Information about Appication
+Footer
+
+
+-----------------------------------Contact Screen ✅ ------------------------------------
+Navbar((Icon or ToggleButton(left), Name of plateform, Account profile(Right)))
+Heading of the Applicaton
+contact form
+footer
+
+                                    User Screen
+_____________________________________________________________________________________
+-----------------------------------HomeScreen ✅ --------------------------------------- 
+Navbar((Icon or ToggleButton(left), Name of plateform, Account profile(Right)))
+welcome Section(Search section)
+Donate now section
+Categories(Horizontal) of pages one page for the donation stats that what is the progress of the donation
+Cards of the NGOs
+Card of donation by users 
+Section of Users Experience
+Footer
+
+
+------------------------------------Donate Screen ✅ -----------------------------------
+Navbar((Icon or ToggleButton(left), Name of plateform, Account profile(Right)))
+form{
+    ItemName,
+    ItemCondition,
+    userSection,
+    Number of items
+    ItemPicture,
+}
+Footer
+
+
+-----------------------------------NGOs ✅ ----------------------------------------------
+Navbar((Icon or ToggleButton(left), Name of plateform, Account profile(Right)))
+Heading of NGOs
+Picture
+Contact Information
+Discription
+Footer
+
+-----------------------------------User Profile ✅ --------------------------------------
+Navbar((Icon or ToggleButton(left), Name of plateform, Account profile(Right)))
+Profile photo
+Username
+user Information
+Donation Stats
+Logout
+Delete profile
+
+
+----------------------------------NGO Requirement Screen ✅ --------------------------------
+Navbar
+Card show Requirement of the NGOs
+Footer
+
+-----------------------------------Donation Stats ✅ ----------------------------------------
+Navbar
+list of items donated by the user and who have accepted the donations 
+footer
+                                    NGO Screens
+_____________________________________________________________________________________
+-----------------------------------NGO Signup and Login ✅ ---------------------------------------
+form(Signup)
+Name, Discription, Email address, Address, Contact Information, Passwrod
+
+form(login)
+Email address, Password
+
+-----------------------------------HomeScreen ✅ ---------------------------------------
+Navbar((Icon or ToggleButton(left), Name of plateform, Account profile(Right)))
+Search section
+Categories(Horizontal)
+Cards of the Items 
+bottom navigation
+
+-------------------------------------Donations Screen ✅ --------------------------------
+Navbar
+Accept the donation or not 
+shows all the donation from the first day
+3 buttons for either Completed or Accepted or Pending
+bottom navigation
+
+-----------------------------------Donation Detail Screen ✅ ----------------------------
+Complete information about a specific donation
+Donor details (name, contact information)
+Item descriptions and images
+Options to accept, decline, or mark as received
+Communication thread with the donor
+bottom navigation
+
+-------------------------------------Inventory Management Screen ✅ ---------------------------
+Current inventory of received items
+Categorization of items
+Ability to mark items as distributed
+Stock levels and alerts for low inventory
+bottom navigation
+
+------------------------------------form for Needs Management Screen ✅ --------------------------------
+Add/edit/remove urgent needs
+Set quantities needed for each item
+Set priority levels
+Option to add descriptions or specifications
+bottom navigation
+
+-------------------------------------Profile/Settings Screen ✅ ------------------------------------------
+NGO profile information and editing
+Address and contact details
+Operation hours
+Notification settings
+Account management options
+bottom navigation
+
+
+-------------------------------------Backend development and frontend Integration --------------------------------
+
+---------------------------------------User Section----------------------------------------------
+
+For the login and register ✅
+Create 3 variables 1 -> Admin, 2 -> User, 3 -> NGO ✅
+
+Navbar -> User profile || Ngo Profile, ✅
+          Logo -> {User logged in -> user HomeScreen}, {Ngo logged in -> Ngo HomeScreen} ✅
+react-native-paper Search bar ✅
+
+Delete User Profile ✅
+
+change the welcome section for the user ✅
+
+DonationSection form and Backend -> Store the photo of item and information ✅
+
+Table of NgoRequirements and show on the ngo Requirements Button ✅
+
+Show the user donations on the my donation button -> it will be shown using user_id, so the donation who has same user_id will be shown ✅
+
+Table for NGOs and render the ngo data in VIEW ALL and on HomeScreen ✅
+
+Table for the testemonials and render it on the HomeScreen ✅
+
+Table for contactUs and Feedback with user_id and ngo_id so that we can determine who wrote the Feedback ✅
+
+if the user click on the ngoname a page will open in which all the info of the ngo will be shown but can not update it ✅
+
+--------------------------------------NGO Section-------------------------------------------------------------
+
+change the welcome section for the NGO ✅
+
+ngo profile should be updated, logout and delete ✅
+
+Table of all donations done by all the users on the VIEW DONATIONS button ✅
+
+Update needs is a form so the data will be added on the last section of the Ngo HomeScreen ✅
+
+Recent donation will show recent 4 donations which this ngo has accepted ✅
+
+VIEW ALL will see all the donation done to this ngo from day 1 ✅
+
+EDIT of urgent needs will be a form so the data will be added on the last section of the HomeScreen ✅ 
+DELETE button will remove the data from the list ✅
+
+the image should be stored in backend folder uploads so that it can be rendered at both laptopn and mobile side ✅
+
+integrate the detail screen of the donation so each item will have their own detail Screen ✅
+seperate page of all the donated items when it is clicked and the status doesnt matter but the status has to be shown which is in the db ✅
+
+Table of Inventory show the inventory of all the donation received to this date ✅
+
+Items included in the table: { ✅
+    inventory_id,
+    ngo_id,
+    user_id,
+    username,
+    ngoname,
+    item_name,
+    Quantity,
+    Status(Accepted, Completed, Rejected)
+}
+
+if the ngo click on the username a page will open in which all the info of the user will be shown but can not update it ✅
+
+-> when ngo log in then for the HomeScreen count the number of rows which have status of accepted and count the number of rows which have 
+   completed and count the number of rows which have pending status so that we can show that on the HomeScreen. ✅
+
+_______________________________________________________Real Time updation__________________________________________________________________________________
+Real time updation on the donation that whether the item is donated or not so the 2 options pending, accepted ✅
+if one ngo accept other can not see that item ✅
+once the ngo accept the donation the donation should be included in the inventory ✅
+the item should not be displayed if the status is accepted or completed to the ngos ✅
+then the user can see that his donation is accepted or completed ✅
+
+2 Ngos cant accept the donation simulataneously of the single donation ✅
