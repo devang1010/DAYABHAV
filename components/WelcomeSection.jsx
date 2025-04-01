@@ -3,11 +3,16 @@ import { View, Text, FlatList, StyleSheet, StatusBar, TouchableOpacity } from "r
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Searchbar } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
-import ngosData from "@/data/ngosData"; // Import your data file
+import axios from "axios";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+// const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
+// const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
 
 const WelcomeSection = ({ welcomeMessage }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [username, setUsername] = useState("User"); // Default username
+  const [ngosData, setNgosData] = useState([]);
 
   // Fetch username from AsyncStorage
   useEffect(() => {
@@ -25,11 +30,33 @@ const WelcomeSection = ({ welcomeMessage }) => {
     getUsername();
   }, []);
 
+  useEffect(() => {
+    const fetchNgosData = async () => {
+      try {
+        const response = await axios.get(
+          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getngos.php"
+        )
+
+        if (response.data.status === "success") {
+          setNgosData(response.data.data);
+        } else {
+          console.log("Error: " + response.data.message);
+        }
+      } catch (error) {
+        console.log("Api error: " + error);
+      }
+    }
+
+    fetchNgosData();
+  }, []);
+
   // Filter NGOs based on search query
   const filteredData = ngosData.filter(
     (ngo) =>
-      ngo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      ngo.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ngo.ngoname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ngo.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ngo.phonenumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ngo.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       ngo.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -56,12 +83,29 @@ const WelcomeSection = ({ welcomeMessage }) => {
       {searchQuery.length > 0 ? (
         <FlatList
           data={filteredData}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.ngo_id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.item} onPress={() => {}}>
-              <Text style={styles.itemTitle}>{item.name}</Text>
-              <Text style={styles.itemLocation}>{item.location}</Text>
-              <Text style={styles.itemDescription}>{item.description}</Text>
+              <Text style={styles.itemTitle}>{item.ngoname}</Text>
+              
+              <View style={styles.contactInfo}>
+                <MaterialIcons name="location-on" size={16} color="#7f8c8d" style={styles.itemLocationIcon} />
+                <Text style={styles.itemLocation}>{item.address}</Text>
+              </View>
+              
+              <View style={styles.contactInfo}>
+                <MaterialIcons name="email" size={16} color="#2980b9" style={styles.itemLocationIcon} />
+                <Text style={styles.contactInfoText}>{item.email}</Text>
+              </View>
+              
+              <View style={styles.contactInfo}>
+                <MaterialIcons name="phone" size={16} color="#2980b9" style={styles.itemLocationIcon} />
+                <Text style={styles.contactInfoText}>{item.phonenumber}</Text>
+              </View>
+              
+              <Text style={styles.itemDescription} numberOfLines={3}>
+                {item.description}
+              </Text>
             </TouchableOpacity>
           )}
           ListEmptyComponent={<Text style={styles.noResult}>No NGOs found</Text>}
@@ -83,7 +127,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     paddingBottom: 10,
-    paddingTop: -28
+    paddingTop: -28,
+    marginTop: 80
   },
   header: {
     marginBottom: 15,
@@ -104,34 +149,66 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginBottom: 10,
   },
+  // Enhanced NGO Card Styles
   item: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    marginVertical: 8,
     padding: 15,
-    marginVertical: 5,
-    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#4a90e2", // Accent color
   },
   itemTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#2c3e50",
+    marginBottom: 6,
   },
   itemLocation: {
     fontSize: 14,
-    color: "#666",
+    color: "#7f8c8d",
+    marginBottom: 4,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  itemLocationIcon: {
+    marginRight: 8,
   },
   itemDescription: {
-    fontSize: 12,
-    color: "#999",
+    fontSize: 13,
+    color: "#34495e",
+    lineHeight: 20,
+    marginTop: 6,
+  },
+  contactInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  contactInfoText: {
+    fontSize: 13,
+    color: "#2980b9",
+    marginLeft: 8,
   },
   noResult: {
     textAlign: "center",
-    color: "#999",
+    color: "#bdc3c7",
     marginTop: 20,
+    fontSize: 16,
+    fontStyle: "italic",
   },
   searchPrompt: {
     textAlign: "center",
-    color: "#888",
+    color: "#95a5a6",
     marginTop: 20,
-    fontSize: 14,
+    fontSize: 15,
   },
 });

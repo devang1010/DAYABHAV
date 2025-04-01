@@ -1,9 +1,33 @@
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, Linking } from 'react-native';
 import React from 'react';
 import { useRouter } from 'expo-router';
+import { Alert } from 'react-native';
 
 const DonationDetailCard = ({ item, donor, contact, image, status, onAccept }) => {
   const router = useRouter();
+
+  const handleCallPress = () => {
+    // Show an alert to confirm calling
+    Alert.alert(
+      'Make a Call',
+      `Would you like to call ${donor}?`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Call',
+          onPress: () => {
+            // Use Linking to open the phone app
+            Linking.openURL(`tel:${contact}`);
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  };
+
   return (
     <View style={styles.card}>
       <Image source={image} style={styles.image} />
@@ -11,15 +35,19 @@ const DonationDetailCard = ({ item, donor, contact, image, status, onAccept }) =
       <View style={styles.details}>
         <Text style={styles.itemName}>{item}</Text>
         <Text style={styles.donorName}>Donor: {donor}</Text>
-        <Text style={styles.contact}>Contact: {contact}</Text>
+        
+        {/* Make contact number touchable */}
+        <TouchableOpacity onPress={handleCallPress}>
+          <Text style={styles.contact}>Contact: {contact}</Text>
+        </TouchableOpacity>
+        
         <Text style={styles.status}>Status: {status.toUpperCase()}</Text>
         
         <View style={styles.buttonContainer}>
-          {/* <TouchableOpacity style={[styles.button, styles.accept]} onPress={onAccept} >
-            <Text style={styles.buttonText}>Accept</Text>
-          </TouchableOpacity> */}
-
-          <TouchableOpacity style={[styles.button, styles.decline]} onPress={() => router.push("/Screens/NGO/Donations/AllDonationsScreen")}>
+          <TouchableOpacity 
+            style={[styles.button, styles.decline]} 
+            onPress={() => router.push("/Screens/NGO/Donations/AllDonationsScreen")}
+          >
             <Text style={styles.buttonText}>Return</Text>
           </TouchableOpacity>
         </View>
@@ -42,14 +70,14 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginBottom: 16,
     alignItems: 'center',
-    width: "100%", // Ensure full width
+    width: "100%",
   },
   image: {
     width: "100%",
-    height: 200, // Fixed height for consistency
+    height: 200,
     borderRadius: 12,
     marginBottom: 12,
-    resizeMode: "contain", // Ensures the image covers the area without distortion
+    resizeMode: "contain",
   },
   details: {
     width: '100%',
@@ -68,8 +96,9 @@ const styles = StyleSheet.create({
   },
   contact: {
     fontSize: 14,
-    color: '#777',
+    color: '#007bff', // Blue color to indicate it's clickable
     marginBottom: 4,
+    textDecorationLine: 'underline', // Underline to suggest it's tappable
   },
   status: {
     fontSize: 14,
@@ -88,14 +117,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  accept: {
-    backgroundColor: '#28a745',
-  },
   decline: {
     backgroundColor: '#dc3545',
-  },
-  received: {
-    backgroundColor: '#007bff',
   },
   buttonText: {
     fontSize: 14,

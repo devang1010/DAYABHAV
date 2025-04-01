@@ -8,8 +8,9 @@ import { useRouter } from "expo-router";
 const AboutUsScreen = () => {
   const router = useRouter();
   return (
-    <ScrollView style={styles.container}>
+    <View>
       <Navbar />
+    <ScrollView style={styles.container}>
 
       <View style={styles.content}>
         <Text style={styles.title}>About Dayabhav</Text>
@@ -52,8 +53,10 @@ const AboutUsScreen = () => {
         </Button>
       </View>
 
-      <Footer />
+
+      {/* <Footer /> */}
     </ScrollView>
+    </View>
   );
 };
 
@@ -62,6 +65,7 @@ export default AboutUsScreen;
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
+    marginTop: 120,
     backgroundColor: "#F5F5F5",
   },
   content: {

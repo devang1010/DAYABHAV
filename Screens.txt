@@ -1,16 +1,30 @@
                                     AdminScreen
-------------------------------------Login Screen--------------------------------
+------------------------------------Login Screen ✅--------------------------------
 Add the data of admin directly in the database with role id -> 1
 then just login and check the role id and show the HomeScreen according to the role
                                 
-------------------------------------UserScreen--------------------------------
-List of all the users with delete button
+--------------------------------Dashboard ✅--------------------------------
+Total donations received (items & quantity)
+Total number of donors & NGOs
+Tab section at the end of the screen
+    1> Users
+    2> Ngos
 
--------------------------------------NgoScreen--------------------------------
-List of all the ngos with deletion button
+
+Anonymous USER, BACK BUTTON, NAVBAR STICK ✅, TABS FOR CONNECT US ✅, EXPIRE DATE OF DONATION, CONTACT NUMBER -> PHONE ✅, FORGOT PASSWORD, 
+PHONENUMBER TO CHAT ✅
+ADMIN PERTICULAR USER AND NGO SCREEN WHICH INCLUDES ALL THE DETAILS ✅, PAGINATION ✅, SEARCH BAR FOR BOTH USER AND NGO ✅, 
+
+------------------------------------UserScreen ✅--------------------------------
+List of all the users with delete, Block button
+
+-------------------------------------NgoScreen ✅--------------------------------
+List of all the ngos with deletion, Block button
 
 --------------------------------------ItemScreen--------------------------------
-List of all the items with delete button
+List of all the items based on the status and it will be sorted by pending, accepted, completed with delete button for only pending status
+
+
 ____________________________________________________________________________________
 -----------------------------------AboutUs Screen ✅ ------------------------------------
 Navbar((Icon or ToggleButton(left), Name of plateform, Account profile(Right)))
@@ -126,7 +140,6 @@ bottom navigation
 NGO profile information and editing
 Address and contact details
 Operation hours
-Notification settings
 Account management options
 bottom navigation
 
@@ -159,6 +172,10 @@ Table for the testemonials and render it on the HomeScreen ✅
 Table for contactUs and Feedback with user_id and ngo_id so that we can determine who wrote the Feedback ✅
 
 if the user click on the ngoname a page will open in which all the info of the ngo will be shown but can not update it ✅
+
+User can delete the donated Item until its status is pending ✅
+
+Search bar will work properly ✅
 
 --------------------------------------NGO Section-------------------------------------------------------------
 
@@ -200,6 +217,8 @@ if the ngo click on the username a page will open in which all the info of the u
 -> when ngo log in then for the HomeScreen count the number of rows which have status of accepted and count the number of rows which have 
    completed and count the number of rows which have pending status so that we can show that on the HomeScreen. ✅
 
+Search bar will work properly ✅
+
 _______________________________________________________Real Time updation__________________________________________________________________________________
 Real time updation on the donation that whether the item is donated or not so the 2 options pending, accepted ✅
 if one ngo accept other can not see that item ✅
@@ -208,3 +227,13 @@ the item should not be displayed if the status is accepted or completed to the n
 then the user can see that his donation is accepted or completed ✅
 
 2 Ngos cant accept the donation simulataneously of the single donation ✅
+
+
+---------------------------------------------Future Updates-------------------------------------------
+Ngos will be shown to user according to their location
+Ngos will be varified before they are approved to act as the ngo on this application
+User and ngo can chat
+User will be rewarded if their donation is accepted
+More Pictures will be shown of the donation to the ngo 
+Notification will be added using firebase
+user and ngo can upload their profile picture to show on the application 

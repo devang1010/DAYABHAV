@@ -34,7 +34,7 @@ const NgoProfile = () => {
 
   const fetchNgoData = async (ngoId) => {
     try {
-      const response = await axios.get(`http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/getngos.php?ngo_id=${ngoId}`);
+      const response = await axios.get(`http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getngos.php?ngo_id=${ngoId}`);
       if (response.data.status === "success") {
         setNgo(response.data.ngo);
       } else {
@@ -47,7 +47,7 @@ const NgoProfile = () => {
 
   const handleSave = async () => {
     try {
-      const response = await axios.put(`http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/updatengoprofile.php`, {
+      const response = await axios.put(`http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/updatengoprofile.php`, {
         ngo_id: ngoId,
         ngoname: ngo.ngoname,
         address: ngo.address,
@@ -89,7 +89,7 @@ const NgoProfile = () => {
         onPress: async () => {
           try {
             const response = await axios.delete(
-              "http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/deletengo.php",
+              "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/deletengo.php",
               { data: { ngo_id: ngoId } }
             );
   
@@ -110,8 +110,9 @@ const NgoProfile = () => {
   };
   
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Navbar />
+      <ScrollView>
       <LinearGradient colors={['#4682B4', '#6CA6CD']} style={styles.header}>
         <Text style={styles.title}>NGO Profile</Text>
         <TouchableOpacity 
@@ -208,9 +209,10 @@ const NgoProfile = () => {
           <Text style={styles.loadingText}>Loading NGO data...</Text>
         )}
       </ScrollView>
+      </ScrollView>
       <ConnectWithUs />
-      <NgoFooter />
-    </ScrollView>
+      {/* <NgoFooter /> */}
+    </View>
   );
 };
 
@@ -220,6 +222,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F7FA',
   },
   header: {
+    marginTop: 100,
     padding: 20,
     paddingTop: 40,
     flexDirection: 'row',

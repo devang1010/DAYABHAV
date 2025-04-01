@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
+import { StyleSheet, Text, View, Dimensions, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
-import { ScrollView } from "react-native-virtualized-view";
 import axios from "axios";
+import { ScrollView } from "react-native-virtualized-view";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NgoRequirementUserScreen from "../../../../components/NgoRequirementUserScreen";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const NgoRequirements = () => {
   const [requirements, setRequirements] = useState([]);
@@ -15,8 +16,9 @@ const NgoRequirements = () => {
     const fetchRequirements = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"
+          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"
         );
+        
         if (response.data.status === "success") {
           setRequirements(response.data.data);
         } else {
@@ -34,47 +36,78 @@ const NgoRequirements = () => {
   }, []);
 
   return (
-    <ScrollView>
+    <SafeAreaView style={styles.mainContainer}>
       <Navbar />
-      <View style={styles.container}>
+    <ScrollView >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Urgent NGO Requirements</Text>
+        
         {loading ? (
           <Text style={styles.loadingText}>Loading...</Text>
         ) : (
-          <FlatList
-            data={requirements}
-            keyExtractor={(item) => item.requirement_id.toString()}
-            renderItem={({ item }) => <NgoRequirementUserScreen item={item} />}
-            contentContainerStyle={styles.listContainer}
-          />
+          <View style={styles.cardsContainer}>
+            {requirements.map((item) => (
+              <NgoRequirementUserScreen 
+                key={item.requirement_id.toString()} 
+                item={item} 
+              />
+            ))}
+            
+            {requirements.length === 0 && (
+              <Text style={styles.noDataText}>No requirements available</Text>
+            )}
+          </View>
         )}
-      </View>
-      <Footer />
+        
+      </ScrollView>
     </ScrollView>
+      <Footer />
+    </SafeAreaView>
   );
 };
 
 export default NgoRequirements;
 
+const windowWidth = Dimensions.get('window').width;
+
 const styles = StyleSheet.create({
-  container: {
+  mainContainer: {
+    flex: 1,
     backgroundColor: "#f5f5f5",
-    padding: 15,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    paddingHorizontal: 15,
+    paddingTop: 10,
+    paddingBottom: 20,
   },
   title: {
+    marginTop: 100,
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
-    marginVertical: 15,
+    marginBottom: 10,
     color: "#333",
   },
-  listContainer: {
-    paddingBottom: 20,
+  cardsContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginTop: 10,
+    marginBottom: 90
   },
   loadingText: {
     textAlign: "center",
     fontSize: 16,
     color: "#666",
-    marginTop: 20,
+    marginTop: 30,
   },
+  noDataText: {
+    textAlign: "center",
+    fontSize: 16,
+    color: "#666",
+    marginTop: 30,
+  },
+  footerSpace: {
+    height: 20,
+  }
 });

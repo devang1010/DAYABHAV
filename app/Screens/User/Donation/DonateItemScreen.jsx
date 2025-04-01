@@ -17,9 +17,10 @@ import { useFocusEffect } from "@react-navigation/native";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 // Base URL for your API
-const API_BASE_URL = "http://192.168.56.92/phpProjects/donationApp_restapi/api";
+const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
 const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
 
 const DonateItemScreen = () => {
@@ -205,9 +206,10 @@ const DonateItemScreen = () => {
   };
 
   return (
-    <ScrollView>
+    <SafeAreaView style={styles.container}>
       <Navbar />
-      <View style={styles.container}>
+    <ScrollView>
+      <View >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Text style={styles.title}>Donate an Item</Text>
           <TextInput
@@ -283,14 +285,15 @@ const DonateItemScreen = () => {
           ) : null}
         </ScrollView>
       </View>
-      <Footer />
     </ScrollView>
+      <Footer />
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { width: "100%", backgroundColor: "#F8F9FA" },
-  scrollContainer: { padding: 20, paddingBottom: 50 },
+  container: { width: "100%", backgroundColor: "#F8F9FA", flex: 1 },
+  scrollContainer: { padding: 20, paddingBottom: 50, marginTop: 80,},
   title: {
     fontSize: 24,
     fontWeight: "bold",

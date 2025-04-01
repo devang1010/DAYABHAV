@@ -14,9 +14,10 @@ import { Ionicons } from "@expo/vector-icons";
 import Navbar from "@/components/Navbar";
 import NgoFooter from "@/components/NgoFooter";
 import ConnectWithUs from "@/components/ConnectWithUs";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const API_URL =
-  "http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/inventory.php";
+  "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/inventory.php";
 
 // Primary color: Steel Blue #4682B4
 // Creating a color palette based on this primary color
@@ -94,7 +95,7 @@ const InventoryManagementScreen = () => {
   
       if (inventoryResponse.data.status === "success") {
         // Now update the donated_items table using the item_id
-        const donatedItemsUrl = "http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/updateDonation.php";
+        const donatedItemsUrl = "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/updateDonation.php";
         
         const donationResponse = await axios.post(donatedItemsUrl, {
           item_id: itemId,
@@ -151,8 +152,9 @@ const InventoryManagementScreen = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Navbar />
+    <ScrollView >
       <View style={styles.headerContainer}>
         <Text style={styles.heading}>Inventory Management</Text>
         <Text style={styles.subheading}>Track and manage your inventory</Text>
@@ -320,9 +322,10 @@ const InventoryManagementScreen = () => {
         </View>
       )}
 
-      <ConnectWithUs />
-      <NgoFooter />
+      {/* <NgoFooter /> */}
     </ScrollView>
+      <ConnectWithUs />
+    </SafeAreaView>
   );
 };
 
@@ -335,7 +338,7 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 100,
     paddingBottom: 8,
   },
   heading: {
@@ -376,7 +379,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     paddingHorizontal: 16,
-    paddingBottom: 20,
+    paddingBottom: 80,
   },
   card: {
     backgroundColor: COLORS.surface,

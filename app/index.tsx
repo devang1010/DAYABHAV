@@ -21,13 +21,18 @@ import AllDonationsScreen from "@/app/Screens/NGO/Donations/AllDonationsScreen"
 import DonationDetailScreen from "@/app/Screens/NGO/Donations/DonationDetailScreen"
 import NgoProfile from "@/app/Screens/NGO/Profile/NgoProfile"
 
+// Admin Screens
+import Dashboard from "@/app/Screens/ADMIN/Dashboard"
 export default function Index() {
   return (
+
+    // <Dashboard />
+
     // <View>
       // <Register /> 
       <Login /> 
     //  <Home /> 
-    //   <DonateItemScreen /> 
+      // <DonateItemScreen /> 
     //   <NgoListScreen /> 
     //   <AboutUs /> 
     //   <ContactUs /> 

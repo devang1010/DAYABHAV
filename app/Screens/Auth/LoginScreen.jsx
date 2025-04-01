@@ -37,7 +37,7 @@ const LoginScreen = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.56.92/phpProjects/donationApp_restapi/api/login.php",
+        "http://192.168.46.163/phpProjects/donationApp_restapi/api/login.php",
         { email, password },
         { headers: { "Content-Type": "application/json" } }
       );
@@ -61,7 +61,10 @@ const LoginScreen = () => {
           router.push("/Screens/User/Home/HomeScreen");
         } else if (response.data.role_id === 3) {
           router.push("/Screens/NGO/Home/NgoHomeScreen");
-        } else {
+        } else if (response.data.role_id === 1) {
+          router.push("/Screens/ADMIN/Dashboard");
+        } 
+        else {
           Alert.alert("Error", "Invalid Role ID, contact the developer");
         }
       } else {

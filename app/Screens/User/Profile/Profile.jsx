@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Profile = () => {
   const router = useRouter();
@@ -85,7 +86,7 @@ const Profile = () => {
   const fetchNumberOfDonations = async (userIdValue) => {
     try {
       const response = await axios.get(
-        `http://192.168.56.92/phpProjects/donationApp_restapi/api/User/getuserdonationstats.php?user_id=${userIdValue}`
+        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/getuserdonationstats.php?user_id=${userIdValue}`
       );
 
       if (response.data.status === "success") {
@@ -103,7 +104,7 @@ const Profile = () => {
   const fetchUserData = async (userIdValue) => {
     try {
       const response = await axios.get(
-        `http://192.168.56.92/phpProjects/donationApp_restapi/api/User/getUser.php?user_id=${userIdValue}`
+        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/getUser.php?user_id=${userIdValue}`
       );
 
       if (response.data.status === "success") {
@@ -111,7 +112,7 @@ const Profile = () => {
 
         // Fetch donation count
         const donationResponse = await axios.get(
-          `http://192.168.56.92/phpProjects/donationApp_restapi/api/User/getuserdonationstats.php?user_id=${userIdValue}`
+          `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/getuserdonationstats.php?user_id=${userIdValue}`
         );
 
         let donationCount = 0;
@@ -161,7 +162,7 @@ const Profile = () => {
       };
 
       const response = await axios.put(
-        `http://192.168.56.92/phpProjects/donationApp_restapi/api/User/updateUser.php?user_id=${userId}`,
+        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/updateUser.php?user_id=${userId}`,
         updateData
       );
 
@@ -199,7 +200,7 @@ const Profile = () => {
           onPress: async () => {
             try {
               const response = await axios.delete(
-                `http://192.168.56.92/phpProjects/donationApp_restapi/api/User/deleteUser.php?user_id=${userId}`
+                `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/deleteUser.php?user_id=${userId}`
               );
 
               if (response.data.status === "success") {
@@ -237,15 +238,16 @@ const Profile = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Navbar />
+    <ScrollView >
       <View style={styles.headerContainer}>
         <View style={styles.headerBackground} />
       </View>
       <View style={styles.profileContainer}>
         <View style={styles.userProfile}>
           <Avatar.Text
-            size={100}
+            size={80}
             label={profileData.name.substring(0, 2).toUpperCase()}
             style={styles.avatar}
             color="#FFFFFF"
@@ -377,8 +379,9 @@ const Profile = () => {
           </Button>
         </View>
       </View>
-      <Footer />
     </ScrollView>
+      <Footer />
+    </SafeAreaView>
   );
 };
 
@@ -405,6 +408,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   headerContainer: {
+    marginTop: 40,
     height: 150,
     position: "relative",
   },
@@ -537,7 +541,7 @@ const styles = StyleSheet.create({
   accountButtonsContainer: {
     width: "90%",
     flexDirection: "column",
-    marginBottom: 30,
+    marginBottom: 80,
   },
   logoutBtn: {
     marginTop: 10,

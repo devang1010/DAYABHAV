@@ -1,97 +1,236 @@
-import { StyleSheet, View, Alert } from "react-native";
-import React, { useState, useEffect } from "react";
-import DonationDetailCard from "@/components/DonationDetailCard";
-import { useRouter } from "expo-router";
-import { useLocalSearchParams } from "expo-router";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React from "react";
+import { 
+  StyleSheet, 
+  View, 
+  SafeAreaView, 
+  Text, 
+  Dimensions, 
+  TouchableOpacity,
+  Image,
+  Linking
+} from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ScrollView } from "react-native-virtualized-view";
+import { MaterialIcons } from '@expo/vector-icons';
 
 import Navbar from "@/components/Navbar";
-import NgoFooter from "@/components/NgoFooter";
 import ConnectWithUs from "@/components/ConnectWithUs";
-import { ScrollView } from "react-native-virtualized-view";
 
-const API_BASE_URL = "http://192.168.56.92/phpProjects/donationApp_restapi/api";
+const { width, height } = Dimensions.get('window');
+
+const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
 const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
 
 const DonationDetailScreen = () => {
   const router = useRouter();
-  const { item_name, donor, contact, image, status, user_id, quantity, item_id } = useLocalSearchParams();
-  const [ngoDetails, setNgoDetails] = useState({ ngo_id: null, ngoname: "" });
+  const { 
+    item_name, 
+    donor, 
+    contact, 
+    image, 
+    status, 
+    quantity, 
+    item_id 
+  } = useLocalSearchParams();
 
-  useEffect(() => {
-    const fetchNgoDetails = async () => {
-      try {
-        const ngo_id = await AsyncStorage.getItem("ngo_id");
-        const ngoname = await AsyncStorage.getItem("ngoname");
-        setNgoDetails({ ngo_id, ngoname });
-      } catch (error) {
-        console.error("Error fetching NGO details:", error);
-      }
-    };
-    fetchNgoDetails();
-  }, []);
+  const handleGoBack = () => {
+    router.back();
+  };
 
-  const handleAcceptDonation = async () => {
-    if (!ngoDetails.ngo_id) {
-      Alert.alert("Error", "NGO details are missing!");
-      return;
-    }
-
-    const requestData = {
-      ngo_id: ngoDetails.ngo_id,
-      user_id: user_id,
-      username: donor,
-      ngoname: ngoDetails.ngoname,
-      item_name: item_name,
-      quantity: quantity ?? "1", // Default to 1 if undefined
-      status: "Accepted",
-    };
-
-    console.log("Sending data to API:", requestData);
-
-    try {
-      const response = await axios.post(`${API_BASE_URL}/Ngo/addToInventory.php`, requestData);
-
-      if (response.data.status === "success") {
-        Alert.alert("Success", "Donation accepted and added to inventory!");
-        router.back(); // Go back to previous screen
-      } else {
-        console.error("Failed to accept donation:", response.data.message);
-        Alert.alert("Error", response.data.message);
-      }
-    } catch (error) {
-      console.error("Error accepting donation:", error);
-      Alert.alert("Error", "Something went wrong. Please try again.");
+  const handleCall = () => {
+    if (contact) {
+      Linking.openURL(`tel:${contact}`);
     }
   };
 
   return (
-    <ScrollView>
+    <SafeAreaView style={styles.container}>
       <Navbar />
-      <View style={styles.container}>
-        <DonationDetailCard
-          item={item_name}
-          donor={donor}
-          contact={contact}
-          image={{ uri: `${IMAGE_BASE_URL}${image}` }}
-          status={status}
-          onAccept={handleAcceptDonation} // Call function on Accept
-        />
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>Donation Details</Text>
       </View>
+
+      <ScrollView 
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.imageContainer}>
+          <View style={styles.imageBorder}>
+            <Image 
+              source={{ uri: `${IMAGE_BASE_URL}${image}` }}
+              style={styles.donationImage}
+              resizeMode="contain"
+            />
+          </View>
+        </View>
+
+        <View style={styles.detailCard}>
+          <Text style={styles.itemName}>{item_name}</Text>
+          
+          <View style={styles.detailRow}>
+            <View style={styles.detailIcon}>
+              <MaterialIcons name="person" color="#4A90E2" size={20} />
+            </View>
+            <Text style={styles.detailText}>Donated by {donor}</Text>
+          </View>
+
+          {/* Clickable Contact Number */}
+          <TouchableOpacity style={styles.detailRow} onPress={handleCall}>
+            <View style={styles.detailIcon}>
+              <MaterialIcons name="phone" color="#4A90E2" size={20} />
+            </View>
+            <Text style={[styles.detailText, styles.phoneText]}>
+              {contact}
+            </Text>
+          </TouchableOpacity>
+
+          <View style={styles.statusContainer}>
+            <Text style={[
+              styles.statusText, 
+              status === 'Pending' ? styles.pendingStatus : styles.availableStatus
+            ]}>
+              {status}
+            </Text>
+            {quantity && (
+              <Text style={styles.quantityText}>
+                Quantity: {quantity}
+              </Text>
+            )}
+          </View>
+        </View>
+
+        <View style={styles.actionContainer}>
+          <TouchableOpacity style={styles.primaryButton} onPress={handleGoBack}>
+            <MaterialIcons name="check" color="white" size={20} />
+            <Text style={styles.primaryButtonText}>Return</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+
       <ConnectWithUs />
-      <NgoFooter />
-    </ScrollView>
+    </SafeAreaView>
   );
 };
-
-export default DonationDetailScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    padding: 16,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: '#F7F9FC',
+  },
+  header: {
+    marginTop: 120,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: 'white',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#333',
+  },
+  content: {
+    flex: 1,
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  imageBorder: {
+    borderRadius: 15,
+    padding: 4,
+  },
+  donationImage: {
+    width: width * 0.7,
+    height: height * 0.3,
+    borderRadius: 12,
+  },
+  detailCard: {
+    backgroundColor: 'white',
+    marginHorizontal: 16,
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  itemName: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  detailIcon: {
+    marginRight: 10,
+  },
+  detailText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  phoneText: {
+    color: '#4A90E2',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 0,
+  },
+  statusText: {
+    fontSize: 16,
+    fontWeight: '600',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  pendingStatus: {
+    backgroundColor: '#FFF3CD',
+    color: '#856404',
+  },
+  availableStatus: {
+    backgroundColor: '#D4EDDA',
+    color: '#155724',
+  },
+  quantityText: {
+    fontSize: 16,
+    color: '#666',
+  },
+  actionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginHorizontal: 16,
+    marginTop: 20,
+  },
+  primaryButton: {
+    flex: 0.48,
+    flexDirection: 'row',
+    backgroundColor: '#4A90E2',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  primaryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
+
+export default DonationDetailScreen;

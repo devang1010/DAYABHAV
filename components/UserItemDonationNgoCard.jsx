@@ -4,7 +4,7 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const API_BASE_URL = "http://192.168.56.92/phpProjects/donationApp_restapi/api";
+const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
 const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
 
 export default function UserItemDonationNgoCard({ item, onStatusChange }) {
@@ -139,7 +139,7 @@ export default function UserItemDonationNgoCard({ item, onStatusChange }) {
       />
       <View style={styles.details}>
         <Text style={styles.itemName}>{item.item_name}</Text>
-        <Text style={styles.donorName}>Donor: {item.username}</Text>
+        {/* <Text style={styles.donorName}>Donor: {item.username}</Text> */}
         <Text style={styles.date}>Date: {item.created_at}</Text>
 
         <View style={styles.statusContainer}>
@@ -168,70 +168,80 @@ export default function UserItemDonationNgoCard({ item, onStatusChange }) {
   );
 }
 
+// And update your getStatusColor function for better colors:
 const getStatusColor = (status) => {
   switch (status.toLowerCase()) {
     case "pending":
-      return "#000000"; // Black
+      return "#FF9800"; // Orange
     case "accepted":
       return "#4CAF50"; // Green
     default:
       return "#E0E0E0";
   }
 };
-
 const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     backgroundColor: "#fff",
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    marginBottom: 12,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 5,
+    marginBottom: 16,
+    marginHorizontal: 2,
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#f0f0f0",
   },
   image: {
-    width: 85,
-    height: 85,
-    borderRadius: 8,
+    width: 90,
+    height: 90,
+    borderRadius: 12,
     marginRight: 16,
-    resizeMode: 'contain', // This ensures the image covers the entire space
+    resizeMode: 'contain',
+    backgroundColor: '#f9f9f9',
   },
   details: {
     flex: 1,
+    gap: 4,
   },
   itemName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: "#212121",
+    marginBottom: 2,
   },
   donorName: {
     fontSize: 14,
-    color: "#666",
+    color: "#424242",
+    fontWeight: "500",
   },
   date: {
     fontSize: 12,
-    color: "#888",
-    marginBottom: 6,
+    color: "#757575",
+    marginBottom: 8,
   },
   statusContainer: {
     flexDirection: "row",
-    gap: 6,
+    gap: 10,
+    marginTop: 4,
   },
   statusButton: {
     flex: 1,
-    paddingVertical: 6,
-    borderRadius: 8,
-    backgroundColor: "#E0E0E0",
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: "#F5F5F5",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
   },
   statusText: {
-    fontSize: 10,
-    color: "#333",
-    fontWeight: "bold",
+    fontSize: 12,
+    color: "#424242",
+    fontWeight: "600",
   },
   selectedText: {
     color: "#fff",

@@ -20,6 +20,7 @@ import NgoCard from "@/components/NgoCard";
 import UserExp from "@/components/UserExp";
 import Footer from "@/components/Footer";
 import ItemCard from "@/components/ItemCard";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const HomeScreen = () => {
   const [ngos, setNgos] = useState([]);
@@ -31,7 +32,7 @@ const HomeScreen = () => {
 
   const ngosList = async () => {
     try {
-      const response = await axios.get("http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/getngos.php");
+      const response = await axios.get("http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getngos.php");
       if (response.data.status === "success") {
         setNgos(response.data.data);
       } else {
@@ -43,8 +44,9 @@ const HomeScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Navbar />
+    <ScrollView >
       <WelcomeSection
         username={"Devang"}
         welcomeMessage={"We appreciate any kind of donations"}
@@ -122,8 +124,9 @@ const HomeScreen = () => {
         />
       </View>
 
-      <Footer />
     </ScrollView>
+      <Footer />
+    </SafeAreaView>
   );
 };
 
@@ -176,6 +179,7 @@ const styles = StyleSheet.create({
   testimonialSection: {
     marginVertical: 20,
     padding: 10,
+    marginBottom: 80,
   },
   testimonialTitle: {
     fontSize: 20,

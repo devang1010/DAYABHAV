@@ -8,6 +8,7 @@ import ngosData from "@/data/ngosData";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NgoListCard from "@/components/NgoListCard";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const NGOListScreen = () => {
   const [ngos, setNgos] = useState([]);
@@ -17,7 +18,7 @@ const NGOListScreen = () => {
 
   const ngosList = async () => {
     try {
-      const response = await axios.get("http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/getngos.php");
+      const response = await axios.get("http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getngos.php");
       if (response.data.status === "success") {
         setNgos(response.data.data);
       } else {
@@ -28,8 +29,9 @@ const NGOListScreen = () => {
     }
   }
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={styles.container}>
       <Navbar />
+    <ScrollView  showsVerticalScrollIndicator={false}>
       <View style={styles.ngoCardContainer}>
         <Text style={styles.ngoCardContainerTitle}>Our NGOs</Text>
         <FlatList
@@ -39,8 +41,9 @@ const NGOListScreen = () => {
           scrollEnabled={false} 
         />
       </View>
-      <Footer />
     </ScrollView>
+      <Footer />
+    </SafeAreaView>
   );
 };
 
@@ -52,6 +55,8 @@ const styles = StyleSheet.create({
   },
   ngoCardContainer: {
     paddingTop: 20,
+    marginTop: 70,
+    marginBottom: 80
   },
   ngoCardContainerTitle: {
     textAlign: "center",

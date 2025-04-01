@@ -7,6 +7,7 @@ import axios from 'axios';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DonationStatsCard from '../../../../components/DonationStatsCard';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DonationStats = () => {
   const [userId, setUserId] = useState(null);
@@ -32,10 +33,15 @@ const DonationStats = () => {
   const fetchDonations = async (userId) => {
     try {
       const response = await axios.get(
-        `http://192.168.56.92/phpProjects/donationApp_restapi/api/User/itemdonation.php?user_id=${userId}`
+        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/itemdonation.php?user_id=${userId}`
       );
       if (response.data.status === 'success') {
-        setDonations(response.data.data);
+
+        const sortedDonations = response.data.data.sort((a, b) => {
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+
+        setDonations(sortedDonations);
       } else {
         console.error('Error fetching donations:', response.data.message);
       }
@@ -46,9 +52,17 @@ const DonationStats = () => {
     }
   };
 
+  // Add this function to handle item removal
+  const handleItemDelete = (deletedItemId) => {
+    setDonations(currentDonations => 
+      currentDonations.filter(donation => donation.item_id !== deletedItemId)
+    );
+  };
+
   return (
-    <ScrollView>
+    <SafeAreaView>
       <Navbar />
+    <ScrollView>
       <View style={styles.container}>
         <Text style={styles.title}>Your Donation Stats</Text>
         {loading ? (
@@ -56,15 +70,21 @@ const DonationStats = () => {
         ) : (
           <FlatList
             data={donations}
-            renderItem={({ item }) => <DonationStatsCard item={item} />}
-            keyExtractor={(item) => (item.id ? item.id.toString() : Math.random().toString())}
+            renderItem={({ item }) => (
+              <DonationStatsCard 
+                item={item} 
+                onDeleteSuccess={handleItemDelete} 
+              />
+            )}
+            keyExtractor={(item) => (item.item_id ? item.item_id.toString() : Math.random().toString())}
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           />
         )}
       </View>
-      <Footer />
     </ScrollView>
+    <Footer />
+    </SafeAreaView>
   );
 };
 
@@ -76,6 +96,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
     paddingHorizontal: 15,
     paddingBottom: 20,
+    marginTop: 80,
+    marginBottom: 50
   },
   title: {
     fontSize: 22,

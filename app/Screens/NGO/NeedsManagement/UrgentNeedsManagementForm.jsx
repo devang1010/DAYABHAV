@@ -1,6 +1,6 @@
 import { 
   StyleSheet, Text, View, TextInput, TouchableOpacity, 
-  Alert, ScrollView, ActivityIndicator 
+  Alert, ActivityIndicator, KeyboardAvoidingView, Platform 
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -8,21 +8,25 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Navbar from '@/components/Navbar';
 import NgoFooter from '@/components/NgoFooter';
 import ConnectWithUs from '@/components/ConnectWithUs';
+import { ScrollView } from 'react-native-virtualized-view';
 
-const API_URL = "http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"; 
+const API_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"; 
 
 const UrgentNeedsManagementForm = () => {
   const [itemName, setItemName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [ngoId, setNgoId] = useState(null);
+  const [ngoName, setNgoName] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchNgoId = async () => {
       try {
         const storedNgoId = await AsyncStorage.getItem("ngo_id");
+        const storedNgoName = await AsyncStorage.getItem("ngoname");
         if (storedNgoId) {
           setNgoId(parseInt(storedNgoId));
+          setNgoName(storedNgoName);
         }
       } catch (error) {
         console.error("Error fetching NGO ID:", error);
@@ -33,7 +37,7 @@ const UrgentNeedsManagementForm = () => {
   }, []);
 
   const handleSubmit = async () => {
-    if (!itemName || !quantity) {
+    if (!itemName || !quantity || !ngoName) {
       return Alert.alert("Error", "All fields are required!");
     }
 
@@ -47,6 +51,7 @@ const UrgentNeedsManagementForm = () => {
         ngo_id: ngoId,
         item_name: itemName.trim(),
         quantity: parseInt(quantity),
+        ngoname: ngoName.trim(),
       });
 
       if (response.data.status === "success") {
@@ -65,95 +70,169 @@ const UrgentNeedsManagementForm = () => {
   };
 
   return (
-    <ScrollView>
-      <Navbar />
-      <View style={styles.container}>
-        <View style={styles.formContainer}>
-          <Text style={styles.title}>Add Urgent Need</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Item Name"
-            placeholderTextColor="#A9A9A9"
-            value={itemName}
-            onChangeText={setItemName}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Quantity"
-            placeholderTextColor="#A9A9A9"
-            value={quantity}
-            onChangeText={setQuantity}
-            keyboardType="numeric"
-          />
-          <TouchableOpacity style={styles.button} onPress={handleSubmit} disabled={loading}>
-            {loading ? (
-              <ActivityIndicator color="#FFF" />
-            ) : (
-              <Text style={styles.buttonText}>Submit</Text>
-            )}
-          </TouchableOpacity>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.keyboardAvoid}
+    >
+        <Navbar />
+      <ScrollView style={styles.scrollView}>
+        <View style={styles.container}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.headerTitle}>Urgent Needs</Text>
+            <Text style={styles.headerSubtitle}>
+              Add items that your organization urgently needs
+            </Text>
+          </View>
+          
+          <View style={styles.formContainer}>
+            <View style={styles.formHeader}>
+              <Text style={styles.title}>New Request</Text>
+            </View>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Item Name</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="What do you need?"
+                placeholderTextColor="#A0AEC0"
+                value={itemName}
+                onChangeText={setItemName}
+              />
+            </View>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Quantity</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="How many?"
+                placeholderTextColor="#A0AEC0"
+                value={quantity}
+                onChangeText={setQuantity}
+                keyboardType="numeric"
+              />
+            </View>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Organization</Text>
+              <TextInput
+                style={[styles.input, styles.disabledInput]}
+                value={ngoName}
+                editable={false}
+              />
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.button} 
+              onPress={handleSubmit} 
+              disabled={loading}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFF" size="small" />
+              ) : (
+                <Text style={styles.buttonText}>Submit Request</Text>
+              )}
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <ConnectWithUs />
-      <NgoFooter />
-    </ScrollView>
+      </ScrollView>
+        <ConnectWithUs />
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  keyboardAvoid: {
     flex: 1,
-    backgroundColor: '#F5F7FA', // Light gray-blue background
-    padding: 20,
+  },
+  scrollView: {
+    flex: 1,
+    backgroundColor: '#F7FAFC',
+    marginTop: 110,
+    marginBottom: 50,
+  },
+  container: {
+    padding: 16,
+  },
+  headerContainer: {
+    marginBottom: 24,
+    paddingHorizontal: 4,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2D3748',
+    marginBottom: 6,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#718096',
+    lineHeight: 22,
   },
   formContainer: {
-    backgroundColor: '#FFF', // White card
-    padding: 25,
-    borderRadius: 15,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-    marginVertical: 20,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    marginBottom: 24,
+    overflow: 'hidden',
+  },
+  formHeader: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2E8F0',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: '#F8FAFC',
   },
   title: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: 'black', // Steel Blue for title
-    marginBottom: 20,
-    textAlign: 'center',
-    letterSpacing: 0.5,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#2D3748',
+  },
+  inputGroup: {
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#4A5568',
+    marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    // borderBottomWidth: 1,
-    borderColor: 'black', // Steel Blue border
-    borderRadius: 10,
-    padding: 12,
+    borderColor: '#E2E8F0',
+    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     fontSize: 16,
-    color: '#333',
-    // backgroundColor: '#F0F8FF', // Light blue input background
-    marginBottom: 15,
+    color: '#2D3748',
+    backgroundColor: '#FFFFFF',
+    marginBottom: 16,
+  },
+  disabledInput: {
+    backgroundColor: '#F7FAFC',
+    color: 'black',
   },
   button: {
-    backgroundColor: '#4682B4', // Steel Blue button
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
+    backgroundColor: '#2B6CB0',
+    paddingVertical: 14,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 3,
+    margin: 20,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
-    shadowRadius: 3,
+    shadowRadius: 1.5,
+    elevation: 2,
   },
   buttonText: {
-    color: '#FFF',
+    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
-    letterSpacing: 0.5,
   },
 });
 

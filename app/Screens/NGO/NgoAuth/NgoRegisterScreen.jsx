@@ -61,7 +61,7 @@ const NGOSignupScreen = () => {
     const registerNgo = async () => {
       try {
         const response = await axios.post(
-          "http://192.168.56.92/phpProjects/donationApp_restapi/api/Ngo/register.php",
+          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/register.php",
           {
             ngoname: name,
             description,

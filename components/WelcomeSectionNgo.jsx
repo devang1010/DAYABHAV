@@ -2,12 +2,17 @@ import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, StatusBar, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Searchbar } from "react-native-paper";
-import ngoRecivedDonation from "@/data/ngoRecivedDonation";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
+const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
 
 const WelcomeSectionNgo = ({ welcomeMessage }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [username, setUsername] = useState(""); // Default username
+  const [username, setUsername] = useState(""); 
+  const [donationData, setDonationData] = useState([]);
 
   useEffect(() => {
     const getUsername = async () => {
@@ -24,13 +29,42 @@ const WelcomeSectionNgo = ({ welcomeMessage }) => {
     getUsername();
   }, []);
 
+  useEffect(() => {
+    const fetchDonationData = async () => {
+      try {
+        const response = await axios.get(
+          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getAlldonations.php"
+        )
+
+        if (response.data.status === "success") {
+          setDonationData(response.data.data);
+        } else {
+          console.log("Error: " + response.data.message);
+        }
+      } catch (error) {
+        console.log ("Api error: " + error);
+      }
+    }
+
+    fetchDonationData();
+  }, [])
+
   // Filter donations based on search query
-  const filteredData = ngoRecivedDonation.filter((donation) =>
-    donation.item.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    donation.donor.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    donation.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    donation.date.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredData = donationData.filter((donation) =>
+    donation.item_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    donation.item_condition.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    donation.username.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Function to get status color
+  const getStatusColor = (status) => {
+    switch(status.toLowerCase()) {
+      case 'pending': return '#FFA500'; // Orange
+      case 'accepted': return '#4CAF50'; // Green
+      case 'completed': return '#2196F3'; // Blue
+      default: return '#9E9E9E'; // Grey
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,22 +89,56 @@ const WelcomeSectionNgo = ({ welcomeMessage }) => {
       {searchQuery.length > 0 ? (
         <FlatList
           data={filteredData}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={(item) => item.item_id.toString()}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.item} onPress={() => {}}>
-              <Image source={item.image} style={styles.itemImage} />
+              <Image 
+                source={{ uri: `${IMAGE_BASE_URL}${item.item_image}` }} 
+                style={styles.itemImage} 
+              />
               <View style={styles.itemInfo}>
-                <Text style={styles.itemTitle}>{item.item}</Text>
-                <Text style={styles.itemDonor}>Donor: {item.donor}</Text>
-                <Text style={styles.itemDate}>Date: {item.date}</Text>
-                <Text style={[styles.itemStatus, styles[item.status]]}>{item.status}</Text>
+                <Text style={styles.itemTitle} numberOfLines={1}>
+                  {item.item_name}
+                </Text>
+                
+                <View style={styles.itemDetailRow}>
+                  <MaterialIcons name="person" size={16} color="#7f8c8d" style={styles.itemIcon} />
+                  <Text style={styles.itemDonor}>Donor: {item.username}</Text>
+                </View>
+                
+                <View style={styles.itemDetailRow}>
+                  <MaterialIcons name="calendar-today" size={16} color="#7f8c8d" style={styles.itemIcon} />
+                  <Text style={styles.itemDate}>Date: {item.created_at}</Text>
+                </View>
+                
+                <View style={styles.itemDetailRow}>
+                  <MaterialIcons name="info" size={16} color="#7f8c8d" style={styles.itemIcon} />
+                  <Text 
+                    style={[
+                      styles.itemStatus, 
+                      { 
+                        backgroundColor: getStatusColor(item.status),
+                        color: item.status.toLowerCase() === 'pending' ? '#333' : '#fff'
+                      }
+                    ]}
+                  >
+                    {item.status}
+                  </Text>
+                </View>
               </View>
             </TouchableOpacity>
           )}
-          ListEmptyComponent={<Text style={styles.noResult}>No items found</Text>}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <MaterialIcons name="search-off" size={50} color="#bdc3c7" />
+              <Text style={styles.noResult}>No items found</Text>
+            </View>
+          }
         />
       ) : (
-        <Text style={styles.searchPrompt}>Start typing to search donated items...</Text>
+        <View style={styles.emptyContainer}>
+          <Text style={styles.searchPrompt}>Start typing to search donated items...</Text>
+        </View>
       )}
     </SafeAreaView>
   );
@@ -86,7 +154,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
     paddingBottom: 10,
-    paddingTop: -28
+    paddingTop: 90
   },
   header: {
     marginBottom: 15,
@@ -110,63 +178,77 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#ffffff",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    marginVertical: 8,
     padding: 15,
-    marginVertical: 5,
-    borderRadius: 8,
+    borderLeftWidth: 4,
+    borderLeftColor: "#4a90e2",
   },
   itemImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    marginRight: 10,
+    width: 70,
+    height: 70,
+    borderRadius: 10,
+    marginRight: 15,
   },
   itemInfo: {
     flex: 1,
   },
+  itemDetailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  itemIcon: {
+    marginRight: 8,
+  },
   itemTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#2c3e50",
+    marginBottom: 6,
   },
   itemDonor: {
     fontSize: 14,
-    color: "#666",
+    color: "#7f8c8d",
   },
   itemDate: {
-    fontSize: 12,
-    color: "#777",
+    fontSize: 13,
+    color: "#7f8c8d",
   },
   itemStatus: {
     fontSize: 12,
     fontWeight: "bold",
     marginTop: 5,
-    paddingVertical: 2,
-    paddingHorizontal: 6,
+    paddingVertical: 3,
+    paddingHorizontal: 8,
     borderRadius: 4,
     alignSelf: "flex-start",
   },
-  pending: {
-    backgroundColor: "#ffcc00",
-    color: "#333",
-  },
-  accepted: {
-    backgroundColor: "#4caf50",
-    color: "#fff",
-  },
-  completed: {
-    backgroundColor: "#008cba",
-    color: "#fff",
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 0,
   },
   noResult: {
     textAlign: "center",
-    color: "#999",
-    marginTop: 20,
+    color: "#bdc3c7",
+    marginTop: 10,
+    fontSize: 16,
+    fontStyle: "italic",
   },
   searchPrompt: {
     textAlign: "center",
-    color: "#888",
-    marginTop: 20,
-    fontSize: 14,
+    color: "#95a5a6",
+    marginTop: 10,
+    fontSize: 15,
   },
 });

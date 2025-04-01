@@ -1,79 +1,100 @@
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import React from "react";
+import { StyleSheet, View, TouchableOpacity, Text, Dimensions } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useRouter, usePathname } from "expo-router";
 
-const ConnectWithUs = () => {
+const BottomTabs = () => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const tabs = [
+    {
+      name: "About Us",
+      icon: "info",
+      color: "#2E86C1",
+      route: '/Screens/Misc/AboutUsScreen'
+    },
+    {
+      name: "Contact Us",
+      icon: "phone",
+      color: "#28B463",
+      route: '/Screens/Misc/ContactUsScreen'
+    },
+    {
+      name: "Feedback",
+      icon: "feedback",
+      color: "#F39C12",
+      route: '/Screens/Misc/FeedbackScreen'
+    }
+  ];
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text style={styles.sectionTitle}>Connect With Us</Text>
-      <View style={styles.connectContainer}>
-        <TouchableOpacity style={styles.connectButton} activeOpacity={0.7} onPress={() => {router.push('/Screens/Misc/AboutUsScreen')}}>
-          <MaterialIcons name="info" size={28} color="#2E86C1" />
-          <Text style={styles.connectText}>About Us</Text>
+    <View style={styles.container}>
+      {tabs.map((tab, index) => (
+        <TouchableOpacity
+          key={index}
+          style={[
+            styles.tab,
+            pathname === tab.route && styles.activeTab
+          ]}
+          onPress={() => router.push(tab.route)}
+        >
+          <MaterialIcons 
+            name={tab.icon} 
+            size={24} 
+            color={pathname === tab.route ? "#FFFFFF" : tab.color}
+          />
+          <Text 
+            style={[
+              styles.tabText,
+              pathname === tab.route && styles.activeTabText
+            ]}
+          >
+            {tab.name}
+          </Text>
         </TouchableOpacity>
-
-        <TouchableOpacity style={styles.connectButton} activeOpacity={0.7} onPress={() => {router.push('/Screens/Misc/ContactUsScreen')}}>
-          <MaterialIcons name="phone" size={28} color="#28B463" />
-          <Text style={styles.connectText}>Contact Us</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.connectButton} activeOpacity={0.7} onPress={() => {router.push('/Screens/Misc/FeedbackScreen')}}>
-          <MaterialIcons name="feedback" size={28} color="#F39C12" />
-          <Text style={styles.connectText}>Feedback</Text>
-        </TouchableOpacity>
-      </View>
+      ))}
     </View>
   );
 };
 
-export default ConnectWithUs;
+export default BottomTabs;
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 12,
-    marginHorizontal: 5,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+  container: {
+    position: 'absolute', // Fixed positioning
+    bottom: 0, // Stick to bottom
+    left: 0,
+    right: 0,
+    // width: Dimensions.get('window').width, // Ensure full width
+    width: "100%",
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E0E0E0',
+    elevation: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 4,
   },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 12,
-    textAlign: "center",
+  tab: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
   },
-  connectContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 10,
+  activeTab: {
+    backgroundColor: '#007bff',
   },
-  connectButton: {
-    flexDirection: "column",
-    alignItems: "center",
-    backgroundColor: "#F8F9FA",
-    paddingVertical: 14,
-    paddingHorizontal: 12,
-    borderRadius: 12,
-    marginHorizontal: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 3,
-    elevation: 2,
+  tabText: {
+    marginTop: 4,
+    fontSize: 12,
+    color: '#2C3E50',
   },
-  connectText: {
-    marginTop: 8,
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#2C3E50",
-    textAlign: "center",
+  activeTabText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
 });
