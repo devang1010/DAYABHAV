@@ -41,7 +41,7 @@ const Dashboard = () => {
     const fetchAllData = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Admin/adminstats.php"
+          "http://192.168.4.126/phpProjects/donationApp_restapi/api/Admin/adminstats.php"
         )
 
         if (response.data.status === "success") {

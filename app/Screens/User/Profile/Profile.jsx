@@ -86,7 +86,7 @@ const Profile = () => {
   const fetchNumberOfDonations = async (userIdValue) => {
     try {
       const response = await axios.get(
-        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/getuserdonationstats.php?user_id=${userIdValue}`
+        `http://192.168.4.126/phpProjects/donationApp_restapi/api/User/getuserdonationstats.php?user_id=${userIdValue}`
       );
 
       if (response.data.status === "success") {
@@ -104,7 +104,7 @@ const Profile = () => {
   const fetchUserData = async (userIdValue) => {
     try {
       const response = await axios.get(
-        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/getUser.php?user_id=${userIdValue}`
+        `http://192.168.4.126/phpProjects/donationApp_restapi/api/User/getUser.php?user_id=${userIdValue}`
       );
 
       if (response.data.status === "success") {
@@ -112,7 +112,7 @@ const Profile = () => {
 
         // Fetch donation count
         const donationResponse = await axios.get(
-          `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/getuserdonationstats.php?user_id=${userIdValue}`
+          `http://192.168.4.126/phpProjects/donationApp_restapi/api/User/getuserdonationstats.php?user_id=${userIdValue}`
         );
 
         let donationCount = 0;
@@ -162,7 +162,7 @@ const Profile = () => {
       };
 
       const response = await axios.put(
-        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/updateUser.php?user_id=${userId}`,
+        `http://192.168.4.126/phpProjects/donationApp_restapi/api/User/updateUser.php?user_id=${userId}`,
         updateData
       );
 
@@ -200,7 +200,7 @@ const Profile = () => {
           onPress: async () => {
             try {
               const response = await axios.delete(
-                `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/deleteUser.php?user_id=${userId}`
+                `http://192.168.4.126/phpProjects/donationApp_restapi/api/User/deleteUser.php?user_id=${userId}`
               );
 
               if (response.data.status === "success") {

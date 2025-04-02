@@ -22,8 +22,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get("window");
 
-const API_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/inventory.php";
-const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
+const API_URL = "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/inventory.php";
+const API_BASE_URL = "http://192.168.4.126/phpProjects/donationApp_restapi/api";
 const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
 
 // Color palette from InventoryManagementScreen
@@ -83,7 +83,7 @@ const NgoDetailsPage = () => {
   const fetchNgoData = async (ngoId) => {
     try {
       const response = await axios.get(
-        `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getngos.php?ngo_id=${ngoId}`
+        `http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/getngos.php?ngo_id=${ngoId}`
       );
       if (response.data.status === "success") {
         setNgoData(response.data.ngo);
@@ -104,7 +104,7 @@ const NgoDetailsPage = () => {
         onPress: async () => {
           try {
             const response = await axios.delete(
-              "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/deletengo.php",
+              "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/deletengo.php",
               { data: { ngo_id: ngo_id } }
             );
   
@@ -129,7 +129,7 @@ const NgoDetailsPage = () => {
     const fetchNumberOfStatusRows = async (ngo_id) => {
       try {
         const response = await axios.post(
-          `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/homescreenstatsaccepte_complete.php?ngo_id=${ngo_id}`
+          `http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/homescreenstatsaccepte_complete.php?ngo_id=${ngo_id}`
         );
 
         if (response.data.status === "success") {

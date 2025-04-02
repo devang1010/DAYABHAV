@@ -33,7 +33,7 @@ const DonationStats = () => {
   const fetchDonations = async (userId) => {
     try {
       const response = await axios.get(
-        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/itemdonation.php?user_id=${userId}`
+        `http://192.168.4.126/phpProjects/donationApp_restapi/api/User/itemdonation.php?user_id=${userId}`
       );
       if (response.data.status === 'success') {
 

@@ -16,7 +16,7 @@ const NgoRequirements = () => {
     const fetchRequirements = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"
+          "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"
         );
         
         if (response.data.status === "success") {

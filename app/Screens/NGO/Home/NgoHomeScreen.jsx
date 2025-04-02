@@ -35,7 +35,7 @@ const NgoHomeScreen = () => {
     const fetchNumOfPendingRows = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/homescreenstatspendingreq.php"
+          "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/homescreenstatspendingreq.php"
         );
 
         if (response.data.status === "success") {
@@ -84,7 +84,7 @@ const NgoHomeScreen = () => {
 
       try {
         const response = await axios.get(
-          `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/inventory.php?ngo_id=${ngoId}`
+          `http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/inventory.php?ngo_id=${ngoId}`
         );
 
         if (response.data.status === "success") {
@@ -107,7 +107,7 @@ const NgoHomeScreen = () => {
   const fetchUrgentNeeds = async (ngoId) => {
     try {
       const response = await axios.get(
-        `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php?ngo_id=${ngoId}`
+        `http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php?ngo_id=${ngoId}`
       );
 
       if (response.data.status === "success") {
@@ -127,7 +127,7 @@ const NgoHomeScreen = () => {
     const fetchNumberOfStatusRows = async (ngoIdValue) => {
       try {
         const response = await axios.post(
-          `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/homescreenstatsaccepte_complete.php`,
+          `http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/homescreenstatsaccepte_complete.php`,
           { ngo_id: ngoIdValue }
         );
 

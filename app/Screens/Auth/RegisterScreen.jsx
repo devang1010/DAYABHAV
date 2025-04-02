@@ -59,7 +59,7 @@ const RegisterScreen = () => {
     const registerUser = async () => {
       try {
         const response = await axios.post(
-          "http://192.168.46.163/phpProjects/donationApp_restapi/api/User/register.php",
+          "http://192.168.4.126/phpProjects/donationApp_restapi/api/User/register.php",
           {
             username: name,
             email,

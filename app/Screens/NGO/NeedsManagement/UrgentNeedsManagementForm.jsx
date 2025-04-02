@@ -10,7 +10,7 @@ import NgoFooter from '@/components/NgoFooter';
 import ConnectWithUs from '@/components/ConnectWithUs';
 import { ScrollView } from 'react-native-virtualized-view';
 
-const API_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"; 
+const API_URL = "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"; 
 
 const UrgentNeedsManagementForm = () => {
   const [itemName, setItemName] = useState('');

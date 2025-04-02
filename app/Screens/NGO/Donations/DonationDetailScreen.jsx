@@ -18,7 +18,7 @@ import ConnectWithUs from "@/components/ConnectWithUs";
 
 const { width, height } = Dimensions.get('window');
 
-const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
+const API_BASE_URL = "http://192.168.4.126/phpProjects/donationApp_restapi/api";
 const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
 
 const DonationDetailScreen = () => {

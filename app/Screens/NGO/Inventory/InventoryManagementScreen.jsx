@@ -17,7 +17,7 @@ import ConnectWithUs from "@/components/ConnectWithUs";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const API_URL =
-  "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/inventory.php";
+  "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/inventory.php";
 
 // Primary color: Steel Blue #4682B4
 // Creating a color palette based on this primary color
@@ -95,7 +95,7 @@ const InventoryManagementScreen = () => {
   
       if (inventoryResponse.data.status === "success") {
         // Now update the donated_items table using the item_id
-        const donatedItemsUrl = "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/updateDonation.php";
+        const donatedItemsUrl = "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/updateDonation.php";
         
         const donationResponse = await axios.post(donatedItemsUrl, {
           item_id: itemId,
