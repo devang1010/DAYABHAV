@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage"; // Import 
 import axios from "axios";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-// const API_BASE_URL = "http://192.168.4.126/phpProjects/donationApp_restapi/api";
+// const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
 // const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
 
 const WelcomeSection = ({ welcomeMessage }) => {
@@ -34,7 +34,7 @@ const WelcomeSection = ({ welcomeMessage }) => {
     const fetchNgosData = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/getngos.php"
+          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getngos.php"
         )
 
         if (response.data.status === "success") {

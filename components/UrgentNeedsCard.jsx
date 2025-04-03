@@ -8,7 +8,7 @@ const UrgentNeedsCard = ({ item, onRemove }) => {
   const handleDelete = async () => {
     try {
       const resposne = await axios.delete(
-        `http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php?requirement_id=${item.requirement_id}`
+        `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php?requirement_id=${item.requirement_id}`
       )
 
       if (resposne.data.status === "success") {

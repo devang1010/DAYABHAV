@@ -37,7 +37,7 @@ const LoginScreen = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.4.126/phpProjects/donationApp_restapi/api/login.php",
+        "http://192.168.46.163/phpProjects/donationApp_restapi/api/login.php",
         { email, password },
         { headers: { "Content-Type": "application/json" } }
       );

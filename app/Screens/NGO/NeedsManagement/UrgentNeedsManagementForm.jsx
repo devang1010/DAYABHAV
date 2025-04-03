@@ -1,16 +1,15 @@
 import { 
   StyleSheet, Text, View, TextInput, TouchableOpacity, 
-  Alert, ActivityIndicator, KeyboardAvoidingView, Platform 
+  Alert, ActivityIndicator, SafeAreaView, Keyboard, Platform
 } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Navbar from '@/components/Navbar';
-import NgoFooter from '@/components/NgoFooter';
 import ConnectWithUs from '@/components/ConnectWithUs';
-import { ScrollView } from 'react-native-virtualized-view';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-const API_URL = "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"; 
+const API_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php"; 
 
 const UrgentNeedsManagementForm = () => {
   const [itemName, setItemName] = useState('');
@@ -18,6 +17,9 @@ const UrgentNeedsManagementForm = () => {
   const [ngoId, setNgoId] = useState(null);
   const [ngoName, setNgoName] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  // Refs for input fields
+  const quantityInputRef = useRef(null);
 
   useEffect(() => {
     const fetchNgoId = async () => {
@@ -58,6 +60,7 @@ const UrgentNeedsManagementForm = () => {
         Alert.alert("Success", "Urgent need added successfully!");
         setItemName('');
         setQuantity('');
+        Keyboard.dismiss();
       } else {
         Alert.alert("Error", response.data.message);
       }
@@ -69,26 +72,40 @@ const UrgentNeedsManagementForm = () => {
     }
   };
 
+  // Function to focus on quantity input
+  const focusQuantityInput = () => {
+    if (quantityInputRef.current) {
+      quantityInputRef.current.focus();
+    }
+  };
+
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.keyboardAvoid}
-    >
-        <Navbar />
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
-            <Text style={styles.headerTitle}>Urgent Needs</Text>
-            <Text style={styles.headerSubtitle}>
-              Add items that your organization urgently needs
-            </Text>
+    <SafeAreaView style={styles.safeArea}>
+      <Navbar />
+      <KeyboardAwareScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollViewContent}
+        keyboardShouldPersistTaps="always"
+        keyboardDismissMode="none"
+        enableOnAndroid={true}
+        enableResetScrollToCoords={false}
+        extraHeight={150}
+        extraScrollHeight={80}
+        bounces={false}
+      >
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerTitle}>Urgent Needs</Text>
+          <Text style={styles.headerSubtitle}>
+            Add items that your organization urgently needs
+          </Text>
+        </View>
+        
+        <View style={styles.formContainer}>
+          <View style={styles.formHeader}>
+            <Text style={styles.title}>New Request</Text>
           </View>
           
-          <View style={styles.formContainer}>
-            <View style={styles.formHeader}>
-              <Text style={styles.title}>New Request</Text>
-            </View>
-            
+          <View style={styles.formBody}>
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Item Name</Text>
               <TextInput
@@ -97,18 +114,25 @@ const UrgentNeedsManagementForm = () => {
                 placeholderTextColor="#A0AEC0"
                 value={itemName}
                 onChangeText={setItemName}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={focusQuantityInput}
+                autoCapitalize="words"
               />
             </View>
             
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Quantity</Text>
               <TextInput
+                ref={quantityInputRef}
                 style={styles.input}
                 placeholder="How many?"
                 placeholderTextColor="#A0AEC0"
                 value={quantity}
                 onChangeText={setQuantity}
                 keyboardType="numeric"
+                returnKeyType="done"
+                onSubmitEditing={handleSubmit}
               />
             </View>
             
@@ -125,6 +149,7 @@ const UrgentNeedsManagementForm = () => {
               style={styles.button} 
               onPress={handleSubmit} 
               disabled={loading}
+              activeOpacity={0.8}
             >
               {loading ? (
                 <ActivityIndicator color="#FFF" size="small" />
@@ -134,104 +159,107 @@ const UrgentNeedsManagementForm = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </ScrollView>
-        <ConnectWithUs />
-    </KeyboardAvoidingView>
+      </KeyboardAwareScrollView>
+      <ConnectWithUs />
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  keyboardAvoid: {
+  safeArea: {
     flex: 1,
+    backgroundColor: '#F7FAFC',
   },
   scrollView: {
     flex: 1,
-    backgroundColor: '#F7FAFC',
-    marginTop: 110,
-    marginBottom: 50,
+    marginTop: 110, // Adjust based on your Navbar height
+    marginBottom: 50, // Adjust based on ConnectWithUs height
   },
-  container: {
-    padding: 16,
+  scrollViewContent: {
+    padding: 20,
+    paddingBottom: 40,
   },
   headerContainer: {
-    marginBottom: 24,
+    marginBottom: 28,
     paddingHorizontal: 4,
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '700',
     color: '#2D3748',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   headerSubtitle: {
-    fontSize: 16,
+    fontSize: 17,
     color: '#718096',
-    lineHeight: 22,
+    lineHeight: 24,
   },
   formContainer: {
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    marginBottom: 24,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 16,
+    elevation: 5,
+    marginBottom: 30,
     overflow: 'hidden',
   },
   formHeader: {
     borderBottomWidth: 1,
     borderBottomColor: '#E2E8F0',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
     backgroundColor: '#F8FAFC',
   },
+  formBody: {
+    padding: 24,
+  },
   title: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '600',
     color: '#2D3748',
   },
   inputGroup: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
+    marginBottom: 20,
   },
   inputLabel: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: '500',
     color: '#4A5568',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   input: {
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
     fontSize: 16,
     color: '#2D3748',
     backgroundColor: '#FFFFFF',
-    marginBottom: 16,
   },
   disabledInput: {
     backgroundColor: '#F7FAFC',
-    color: 'black',
+    color: '#4A5568',
+    borderColor: '#CBD5E0',
   },
   button: {
     backgroundColor: '#2B6CB0',
-    paddingVertical: 14,
-    borderRadius: 8,
+    paddingVertical: 16,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    margin: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.5,
-    elevation: 2,
+    marginTop: 10,
+    shadowColor: '#2B6CB0',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontSize: 16,
+    fontSize: 17,
     fontWeight: '600',
   },
 });

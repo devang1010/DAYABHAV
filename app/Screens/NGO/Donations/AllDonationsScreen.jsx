@@ -9,7 +9,7 @@
 
   const { height, width } = Dimensions.get('window');
 
-  const API_BASE_URL = "http://192.168.4.126/phpProjects/donationApp_restapi/api";
+  const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
 
   const AllDonationsScreen = () => {
     const [donations, setDonations] = useState([]);

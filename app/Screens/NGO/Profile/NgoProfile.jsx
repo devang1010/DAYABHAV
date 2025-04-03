@@ -34,7 +34,7 @@ const NgoProfile = () => {
 
   const fetchNgoData = async (ngoId) => {
     try {
-      const response = await axios.get(`http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/getngos.php?ngo_id=${ngoId}`);
+      const response = await axios.get(`http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getngos.php?ngo_id=${ngoId}`);
       if (response.data.status === "success") {
         setNgo(response.data.ngo);
       } else {
@@ -47,7 +47,7 @@ const NgoProfile = () => {
 
   const handleSave = async () => {
     try {
-      const response = await axios.put(`http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/updatengoprofile.php`, {
+      const response = await axios.put(`http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/updatengoprofile.php`, {
         ngo_id: ngoId,
         ngoname: ngo.ngoname,
         address: ngo.address,
@@ -89,7 +89,7 @@ const NgoProfile = () => {
         onPress: async () => {
           try {
             const response = await axios.delete(
-              "http://192.168.4.126/phpProjects/donationApp_restapi/api/Ngo/deletengo.php",
+              "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/deletengo.php",
               { data: { ngo_id: ngoId } }
             );
   
