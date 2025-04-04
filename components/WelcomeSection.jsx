@@ -85,7 +85,7 @@ const WelcomeSection = ({ welcomeMessage }) => {
           data={filteredData}
           keyExtractor={(item) => item.ngo_id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.item} onPress={() => {}}>
+            <TouchableOpacity style={styles.item}>
               <Text style={styles.itemTitle}>{item.ngoname}</Text>
               
               <View style={styles.contactInfo}>

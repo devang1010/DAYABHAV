@@ -91,10 +91,11 @@ const WelcomeSectionNgo = ({ welcomeMessage }) => {
           data={filteredData}
           keyExtractor={(item) => item.item_id.toString()}
           renderItem={({ item }) => (
-            <TouchableOpacity style={styles.item} onPress={() => {}}>
+            <TouchableOpacity style={styles.item}>
               <Image 
                 source={{ uri: `${IMAGE_BASE_URL}${item.item_image}` }} 
                 style={styles.itemImage} 
+                resizeMode="contain"
               />
               <View style={styles.itemInfo}>
                 <Text style={styles.itemTitle} numberOfLines={1}>
