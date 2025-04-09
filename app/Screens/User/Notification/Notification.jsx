@@ -60,7 +60,7 @@ const Notification = ({ navigation }) => {
 
   const renderNotificationItem = ({ item }) => {
     // Determine status icon and color
-    let statusIcon, statusColor, backgroundColor;
+    let statusIcon, statusColor, backgroundColor;   
     
     if (item.status === 'accepted') {
       statusIcon = 'check-circle';
