@@ -23,6 +23,33 @@ export default function DonationStatsCard({ item, onDeleteSuccess }) {
     });
   };
 
+  // Calculate remaining days for donation
+  const calculateRemainingDays = () => {
+    if (normalizedStatus !== "accepted") return null;
+    
+    // Use accepted_date instead of created_at as the accepted date
+    // Fallback to created_at if accepted_date is not available
+    const acceptedDate = new Date(item.accepted_date || item.created_at);
+    const deadlineDate = new Date(acceptedDate);
+    deadlineDate.setDate(deadlineDate.getDate() + 30); // Add 30 days
+    
+    const currentDate = new Date();
+    const timeRemaining = deadlineDate - currentDate;
+    const daysRemaining = Math.ceil(timeRemaining / (1000 * 60 * 60 * 24));
+    
+    return daysRemaining > 0 ? daysRemaining : 0;
+  };
+
+  // Get remaining days
+  const remainingDays = calculateRemainingDays();
+
+  // Get style for remaining days text
+  const getRemainingDaysStyle = (days) => {
+    if (days <= 7) return styles.urgentRemainingDays;
+    if (days <= 15) return styles.warningRemainingDays;
+    return styles.normalRemainingDays;
+  };
+
   const handleDelete = async () => {
     try {
       const response = await fetch(`${DELETE_API_URL}`, {
@@ -133,13 +160,37 @@ export default function DonationStatsCard({ item, onDeleteSuccess }) {
               </Text>
             </View>
             
-            {normalizedStatus === "accepted" && (
-              <View style={styles.deliveryInstructions}>
-                <Ionicons name="information-circle-outline" size={18} color="#4682B4" />
-                <Text style={styles.deliveryText}>
-                  Please deliver your donation to the NGO address shown above.
+            {/* Show accepted date information if available */}
+            {normalizedStatus === "accepted" && item.accepted_date && (
+              <View style={styles.ngoDetailRow}>
+                <Text style={styles.ngoLabel}>Accepted on:</Text>
+                <Text style={styles.ngoValue} numberOfLines={1} ellipsizeMode="tail">
+                  {formatDate(item.accepted_date)}
                 </Text>
               </View>
+            )}
+            
+            {/* Show deadline information for accepted items */}
+            {normalizedStatus === "accepted" && (
+              <>
+                <View style={styles.deliveryInstructions}>
+                  <Ionicons name="information-circle-outline" size={18} color="#4682B4" />
+                  <Text style={styles.deliveryText}>
+                    Please deliver your donation to the NGO address shown above.
+                  </Text>
+                </View>
+                
+                {/* Donation Deadline Information */}
+                <View style={styles.deadlineContainer}>
+                  <Ionicons name="time-outline" size={18} color={remainingDays <= 7 ? "#FF3B30" : "#FF9500"} />
+                  <Text style={[styles.deadlineText, getRemainingDaysStyle(remainingDays)]}>
+                    {remainingDays === 0 
+                      ? "Deadline reached! Please deliver your donation immediately."
+                      : `${remainingDays} ${remainingDays === 1 ? 'day' : 'days'} left to deliver your donation.`
+                    }
+                  </Text>
+                </View>
+              </>
             )}
             
             {normalizedStatus === "completed" && (
@@ -303,13 +354,37 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     marginTop: 0,
-    // alignItems: 'flex-start',
+    alignItems: 'flex-start',
   },
   deliveryText: {
     fontSize: 14,
     color: '#0066CC',
     marginLeft: 8,
     flex: 1,
+  },
+  deadlineContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#FFF9E6',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 12,
+    alignItems: 'flex-start',
+  },
+  deadlineText: {
+    fontSize: 14,
+    marginLeft: 8,
+    flex: 1,
+    fontWeight: '500',
+  },
+  normalRemainingDays: {
+    color: '#008800',
+  },
+  warningRemainingDays: {
+    color: '#FF9500',
+  },
+  urgentRemainingDays: {
+    color: '#FF3B30',
+    fontWeight: 'bold',
   },
   thankYouContainer: {
     flexDirection: 'row',
