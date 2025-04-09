@@ -2,17 +2,18 @@ import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Searchbar } from "react-native-paper";
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
-// const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
-// const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
+import { useRouter } from "expo-router";
 
 const WelcomeSection = ({ welcomeMessage }) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [username, setUsername] = useState("User"); // Default username
+  const [username, setUsername] = useState("User");
   const [ngosData, setNgosData] = useState([]);
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
+  // const navigation = useNavigation();
+  const router = useRouter();
 
   // Fetch username from AsyncStorage
   useEffect(() => {
@@ -50,6 +51,11 @@ const WelcomeSection = ({ welcomeMessage }) => {
     fetchNgosData();
   }, []);
 
+  // Navigate to notification page
+  const handleNotificationPress = () => {
+    router.push("/Screens/User/Notification/Notification");
+  };
+
   // Filter NGOs based on search query
   const filteredData = ngosData.filter(
     (ngo) =>
@@ -65,7 +71,15 @@ const WelcomeSection = ({ welcomeMessage }) => {
       <StatusBar barStyle="dark-content" />
 
       <View style={styles.header}>
-        <Text style={styles.userName}>Hello, {username} 👋</Text>
+        <View style={styles.userNameContainer}>
+          <Text style={styles.userName}>Hello, {username.split(" ")[0]} 👋</Text>
+          
+          {/* Notification bell icon */}
+          <TouchableOpacity onPress={handleNotificationPress} style={styles.notificationIcon}>
+            <MaterialIcons name="notifications" size={24} color="#333" />
+            {hasUnreadNotifications && <View style={styles.notificationBadge} />}
+          </TouchableOpacity>
+        </View>
         <Text style={styles.welcomeMessage}>{welcomeMessage}</Text>
       </View>
 
@@ -133,10 +147,30 @@ const styles = StyleSheet.create({
   header: {
     marginBottom: 15,
   },
+  userNameContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   userName: {
     fontSize: 22,
     fontWeight: "bold",
     color: "#333",
+  },
+  notificationIcon: {
+    position: 'relative',
+    padding: 5,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 5,
+    right: 5,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#FF3B30',
+    borderWidth: 1,
+    borderColor: '#FFF',
   },
   welcomeMessage: {
     fontSize: 14,
