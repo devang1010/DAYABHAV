@@ -5,38 +5,56 @@ import { Searchbar } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { useRouter } from "expo-router";
+import { useRouter, useFocusEffect } from "expo-router";
 
 const WelcomeSection = ({ welcomeMessage }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [username, setUsername] = useState("User");
   const [ngosData, setNgosData] = useState([]);
-  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(true);
-  // const navigation = useNavigation();
+  const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+  const [notificationData, setNotificationData] = useState([]);
+  const [userId, setUserId] = useState(null);
   const router = useRouter();
 
-  // Fetch username from AsyncStorage
+  // Fetch username and userId from AsyncStorage
   useEffect(() => {
-    const getUsername = async () => {
+    const getUserInfo = async () => {
       try {
         const storedUsername = await AsyncStorage.getItem("username");
+        const storedUserId = await AsyncStorage.getItem("user_id");
+        
         if (storedUsername) {
           setUsername(storedUsername);
         }
+        
+        if (storedUserId) {
+          setUserId(storedUserId);
+        }
       } catch (error) {
-        console.error("Error fetching username:", error);
+        console.error("Error fetching user info:", error);
       }
     };
 
-    getUsername();
+    getUserInfo();
   }, []);
 
+  // Check for unread notifications whenever screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      if (userId) {
+        checkForUnreadNotifications();
+      }
+      return () => {};
+    }, [userId])
+  );
+
+  // Fetch NGOs data
   useEffect(() => {
     const fetchNgosData = async () => {
       try {
         const response = await axios.get(
           "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/getngos.php"
-        )
+        );
 
         if (response.data.status === "success") {
           setNgosData(response.data.data);
@@ -46,13 +64,91 @@ const WelcomeSection = ({ welcomeMessage }) => {
       } catch (error) {
         console.log("Api error: " + error);
       }
-    }
+    };
 
     fetchNgosData();
   }, []);
 
+  // Get read notification IDs from AsyncStorage
+  const getReadNotifications = async () => {
+    try {
+      const readNotifs = await AsyncStorage.getItem('read_notifications');
+      return readNotifs ? JSON.parse(readNotifs) : [];
+    } catch (error) {
+      console.error('Error getting read notifications:', error);
+      return [];
+    }
+  };
+
+  // Get last checked notifications timestamp
+  const getLastCheckedTimestamp = async () => {
+    try {
+      const timestamp = await AsyncStorage.getItem('last_notification_check');
+      return timestamp ? parseInt(timestamp, 10) : 0;
+    } catch (error) {
+      console.error('Error getting last checked timestamp:', error);
+      return 0;
+    }
+  };
+
+  // Update last checked timestamp
+  const updateLastCheckedTimestamp = async () => {
+    try {
+      await AsyncStorage.setItem('last_notification_check', Date.now().toString());
+    } catch (error) {
+      console.error('Error updating last checked timestamp:', error);
+    }
+  };
+
+  // Check for unread notifications
+  const checkForUnreadNotifications = async () => {
+    if (!userId) return;
+    
+    try {
+      // Get notifications from API
+      const response = await axios.get(
+        `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/itemdonation.php?user_id=${userId}`
+      );
+      
+      if (response.data.status === 'success') {
+        // Sort by date (newest first)
+        const sortedNotifications = response.data.data.sort((a, b) => {
+          return new Date(b.created_at) - new Date(a.created_at);
+        });
+
+        // Get previously read notifications
+        const readNotifs = await getReadNotifications();
+        const lastChecked = await getLastCheckedTimestamp();
+        
+        // Store current notifications list
+        setNotificationData(sortedNotifications);
+        
+        // Check for new notifications since last check
+        const hasNewNotifications = sortedNotifications.some(item => {
+          // Skip pending status
+          if (item.status.toLowerCase() === 'pending') return false;
+          
+          // Check if this notification is unread
+          const notificationDate = new Date(item.created_at).getTime();
+          const isUnread = !readNotifs.includes(item.item_id.toString());
+          
+          // Return true if it's unread or if it's newer than last check
+          return isUnread || notificationDate > lastChecked;
+        });
+        
+        setHasUnreadNotifications(hasNewNotifications);
+      }
+    } catch (error) {
+      console.error('Error checking notifications:', error);
+    }
+  };
+
   // Navigate to notification page
-  const handleNotificationPress = () => {
+  const handleNotificationPress = async () => {
+    // Update the last checked timestamp before navigating
+    await updateLastCheckedTimestamp();
+    
+    // Navigate to notification screen
     router.push("/Screens/User/Notification/Notification");
   };
 
