@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ScrollView, View, StyleSheet, Alert } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   TextInput,
   Button,
@@ -13,22 +12,26 @@ import { useRouter } from "expo-router";
 import axios from "axios";
 import { StatusBar } from "expo-status-bar";
 
-const LoginScreen = () => {
+const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const validateEmail = (email) => /\S+@\S+\.\S+/.test(email);
   const hasEmailError = email.length > 0 && !validateEmail(email);
-  const hasPasswordError = password.length > 0 && password.length < 6;
+  const hasPasswordError = newPassword.length > 0 && newPassword.length < 6;
+  const hasConfirmPasswordError = 
+    confirmPassword.length > 0 && confirmPassword !== newPassword;
 
-  const handleLogin = async () => {
-    if (!email || !password) {
+  const handleResetPassword = async () => {
+    if (!email || !newPassword || !confirmPassword) {
       Alert.alert("Error", "All fields are required!");
       return;
     }
-    if (hasEmailError || hasPasswordError) {
+    
+    if (hasEmailError || hasPasswordError || hasConfirmPasswordError) {
       Alert.alert("Error", "Please fix errors before submitting.");
       return;
     }
@@ -37,50 +40,25 @@ const LoginScreen = () => {
 
     try {
       const response = await axios.post(
-        "http://192.168.46.163/phpProjects/donationApp_restapi/api/login.php",
-        { email, password },
+        "http://192.168.46.163/phpProjects/donationApp_restapi/api/resetpassword.php",
+        { email, new_password: newPassword },
         { headers: { "Content-Type": "application/json" } }
       );
 
       setLoading(false);
 
       if (response.data.success) {
-        Alert.alert("Success", "Login successful!");
-
-        // Store user_id in AsyncStorage
-        await AsyncStorage.setItem("user_id", String(response.data.user_id));
-        await AsyncStorage.setItem("role_id", String(response.data.role_id));
-        await AsyncStorage.setItem("username", String(response.data.username));
-
-        // Store Ngo data
-        await AsyncStorage.setItem("ngo_id", String(response.data.ngo_id));
-        await AsyncStorage.setItem("ngoname", String(response.data.ngoname));
-        await AsyncStorage.setItem("email", String(response.data.email));
-
-        if (response.data.role_id === 2) {
-          if (response.data.blocked === 0) {
-            router.push("/Screens/User/Home/HomeScreen");
-          } else {
-            Alert.alert(
-              "Error",
-              "Your account is blocked. Please contact support to unblock your account."
-            );
-            router.push("/Screens/Misc/ContactUsScreen");
-          }
-        } else if (response.data.role_id === 3) {
-          router.push("/Screens/NGO/Home/NgoHomeScreen");
-        } else if (response.data.role_id === 1) {
-          router.push("/Screens/ADMIN/Dashboard");
-        } 
-        else {
-          Alert.alert("Error", "Invalid Role ID, contact the developer");
-        }
+        Alert.alert(
+          "Success", 
+          "Password has been reset successfully!",
+          [{ text: "OK", onPress: () => router.push("/Screens/Auth/LoginScreen") }]
+        );
       } else {
-        Alert.alert("Error", response.data.message || "Login failed!");
+        Alert.alert("Error", response.data.message );
       }
     } catch (error) {
       setLoading(false);
-      console.error("Login Error:", error);
+      console.error("Password Reset Error:", error);
       Alert.alert("Error", "Something went wrong. Please try again.");
     }
   };
@@ -96,7 +74,7 @@ const LoginScreen = () => {
           </View>
           
           <View style={styles.formContainer}>
-            <Title style={styles.title}>Login</Title>
+            <Title style={styles.title}>Reset Password</Title>
             
             <TextInput
               label="Email"
@@ -114,9 +92,9 @@ const LoginScreen = () => {
             </HelperText>
 
             <TextInput
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
+              label="New Password"
+              value={newPassword}
+              onChangeText={setNewPassword}
               mode="outlined"
               secureTextEntry
               style={styles.input}
@@ -128,61 +106,42 @@ const LoginScreen = () => {
               Password must be at least 6 characters.
             </HelperText>
 
-            <View style={styles.LinkContainer}>
-            <Text 
-              style={styles.forgotPasswordLink}
-              onPress={() => router.push("/Screens/Auth/ForgotPasswordScreen")}
-            >
-              Forgot Password?
-            </Text>
-            </View>
+            <TextInput
+              label="Confirm Password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              mode="outlined"
+              secureTextEntry
+              style={styles.input}
+              outlineColor="#ddd"
+              activeOutlineColor="#4682B4"
+              left={<TextInput.Icon icon="lock-check" color="#4682B4" />}
+            />
+            <HelperText type="error" visible={hasConfirmPasswordError}>
+              Passwords do not match.
+            </HelperText>
 
             {loading ? (
               <ActivityIndicator animating={true} size="large" color="#4682B4" />
             ) : (
               <Button 
                 mode="contained" 
-                onPress={handleLogin} 
+                onPress={handleResetPassword} 
                 style={styles.button}
                 contentStyle={styles.buttonContent}
                 labelStyle={styles.buttonLabel}
                 color="#4682B4"
               >
-                Login
+                Reset Password
               </Button>
             )}
 
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>OR</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <Text style={styles.signupText}>Don't have an account?</Text>
-
-            <View style={styles.registrationContainer}>
-              <Text style={styles.signupText}>
-                Register as User?{" "}
-                <Text
-                  style={styles.signupLink}
-                  onPress={() => router.push("/Screens/Auth/RegisterScreen")}
-                >
-                  Register here
-                </Text>
-              </Text>
-
-              <Text style={styles.signupText}>
-                Register as NGO?{" "}
-                <Text
-                  style={styles.signupLink}
-                  onPress={() =>
-                    router.push("/Screens/NGO/NgoAuth/NgoRegisterScreen")
-                  }
-                >
-                  Register here
-                </Text>
-              </Text>
-            </View>
+            <Text 
+              style={styles.backToLoginLink}
+              onPress={() => router.push("/Screens/Auth/LoginScreen")}
+            >
+              Back to Login
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -237,18 +196,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: "#fff",
   },
-  LinkContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center"
-  },
-  forgotPasswordLink: {
-    textAlign: "right",
-    // marginTop: 4,
-    marginBottom: 12,
-    color: "#4682B4",
-    fontWeight: "500",
-  },
   button: {
     marginTop: 16,
     borderRadius: 8,
@@ -263,34 +210,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     letterSpacing: 0.5,
   },
-  divider: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 24,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: "#ddd",
-  },
-  dividerText: {
-    paddingHorizontal: 16,
-    color: "#888",
-    fontWeight: "500",
-  },
-  signupText: {
+  backToLoginLink: {
     textAlign: "center",
-    marginTop: 8,
-    fontSize: 14,
-    color: "#666",
-  },
-  signupLink: {
+    marginTop: 24,
     color: "#4682B4",
     fontWeight: "bold",
   },
-  registrationContainer: {
-    marginTop: 8,
-  },
 });
 
-export default LoginScreen;
+export default ForgotPasswordScreen;

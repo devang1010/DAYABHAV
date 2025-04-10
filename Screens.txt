@@ -6,12 +6,12 @@ then just login and check the role id and show the HomeScreen according to the r
 --------------------------------Dashboard ✅--------------------------------
 Total donations received (items & quantity)
 Total number of donors & NGOs
-Tab section at the end of the screen
+Tab section at the end of the screen 
     1> Users
     2> Ngos
 
 
-Anonymous USER, NAVBAR STICK ✅, TABS FOR CONNECT US ✅, EXPIRE DATE OF DONATION ✅, CONTACT NUMBER -> PHONE ✅, FORGOT PASSWORD, 
+NAVBAR STICK ✅, TABS FOR CONNECT US ✅, EXPIRE DATE OF DONATION ✅, CONTACT NUMBER -> PHONE ✅, FORGOT PASSWORD, 
 PHONENUMBER TO CHAT ✅
 User block button ✅
 ADMIN PERTICULAR USER AND NGO SCREEN WHICH INCLUDES ALL THE DETAILS ✅, PAGINATION ✅, SEARCH BAR FOR BOTH USER AND NGO ✅, 
@@ -232,6 +232,7 @@ then the user can see that his donation is accepted or completed ✅
 
 ---------------------------------------------Future Updates-------------------------------------------
 Ngos will be shown to user according to their location
+Anonymous Donation
 Ngos will be varified before they are approved to act as the ngo on this application
 User and ngo can chat
 User will be rewarded if their donation is accepted
