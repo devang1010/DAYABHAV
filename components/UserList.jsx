@@ -6,6 +6,9 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import axios from "axios";
 import { router } from "expo-router";
 
+const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
+const IMAGE_BASE_URL = `${API_BASE_URL}/User/getimage.php?filename=`;
+
 const UserList = () => {
   const [users, setUsers] = useState([]);
   const [displayedUsers, setDisplayedUsers] = useState([]);
@@ -17,7 +20,7 @@ const UserList = () => {
     const fetchAllUsers = async () => {
       try {
         const response = await axios.get(
-          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Admin/getallusers.php"
+          `${API_BASE_URL}/Admin/getallusers.php`
         );
 
         if (response.data.status === "success") {
@@ -26,7 +29,7 @@ const UserList = () => {
           );
           setUsers(sortedUsers);
           
-          // Initially display first 10 users
+          // Initially display first 5 users
           setDisplayedUsers(sortedUsers.slice(0, usersPerPage));
         } else {
           console.error("Error:", response.data.message);
@@ -59,8 +62,8 @@ const UserList = () => {
 
   const handleDeleteUser = async (userId) => {
     Alert.alert(
-      "Delete Account",
-      "Are you sure you want to delete your account? This action cannot be undone.",
+      "Delete User",
+      "Are you sure you want to delete this user? This action cannot be undone.",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -69,23 +72,23 @@ const UserList = () => {
           onPress: async () => {
             try {
               const response = await axios.delete(
-                `http://192.168.46.163/phpProjects/donationApp_restapi/api/User/deleteUser.php?user_id=${userId}`
+                `${API_BASE_URL}/User/deleteUser.php?user_id=${userId}`
               );
 
               if (response.data.status === "success") {
-                // Remove from both full users list and displayed users
-                setUsers((currentUsers) =>
-                  currentUsers.filter((user) => user.user_id !== userId)
-                );
-                setDisplayedUsers((currentUsers) =>
-                  currentUsers.filter((user) => user.user_id !== userId)
-                );
-                Alert.alert("Success", "Account deleted successfully!");
+                // Remove user from both lists
+                const updatedUsers = users.filter(user => user.user_id !== userId);
+                setUsers(updatedUsers);
+                
+                const updatedDisplayedUsers = displayedUsers.filter(user => user.user_id !== userId);
+                setDisplayedUsers(updatedDisplayedUsers);
+                
+                Alert.alert("Success", "User deleted successfully!");
               } else {
                 Alert.alert("Error", response.data.message);
               }
             } catch (error) {
-              console.error("Error deleting account:", error);
+              console.error("Error deleting user:", error);
               Alert.alert("Error", "Something went wrong. Please try again.");
             }
           },
@@ -96,20 +99,27 @@ const UserList = () => {
 
   const UserCard = ({ item }) => (
     <TouchableOpacity onPress={() => {router.push(`/Screens/ADMIN/UserDetailsPage?user_id=${item.user_id}`)}}>
-    <View style={styles.userCard}>
-      <View style={styles.userInfo}>
-        <Text style={styles.userName}>{item.username}</Text>
-        <Text style={styles.userEmail}>{item.email}</Text>
-        <Text style={styles.userPhone}>+91 {item.phonenumber}</Text>
+      <View style={styles.userCard}>
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>{item.username}</Text>
+          <Text style={styles.userEmail}>{item.email}</Text>
+          <Text style={styles.userPhone}>+91 {item.phonenumber}</Text>
+          {item.blocked === 1 && (
+            <Text style={styles.blockedStatus}>Blocked</Text>
+          )}
+        </View>
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteUser(item.user_id)}
+        >
+          <MaterialIcons 
+            name="delete" 
+            size={24} 
+            color="#ff3b30" 
+          />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={styles.deleteButton}
-        onPress={() => handleDeleteUser(item.user_id)}
-      >
-        <MaterialIcons name="delete" size={24} color="#ff6b6b" />
-      </TouchableOpacity>
-    </View>
-      </TouchableOpacity>
+    </TouchableOpacity>
   );
 
   return (
@@ -187,11 +197,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     flexDirection: "row",
     alignItems: "center",
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 4 },
-    // shadowOpacity: 0.12,
-    // shadowRadius: 6,
-    // elevation: 6,
     borderWidth: 1,
     borderColor: "#e3e3e3",
   },
@@ -214,11 +219,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#7f8c8d",
   },
+  blockedStatus: {
+    fontSize: 12,
+    color: "#e74c3c",
+    fontWeight: "bold",
+    marginTop: 5,
+  },
   deleteButton: {
     padding: 10,
     borderRadius: 25,
     backgroundColor: "#fff3f3",
-    shadowColor: "#ff6b6b",
+    shadowColor: "#ff3b30",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
@@ -256,6 +267,5 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
 });
-
 
 export default UserList;

@@ -58,7 +58,15 @@ const LoginScreen = () => {
         await AsyncStorage.setItem("email", String(response.data.email));
 
         if (response.data.role_id === 2) {
-          router.push("/Screens/User/Home/HomeScreen");
+          if (response.data.blocked === 0) {
+            router.push("/Screens/User/Home/HomeScreen");
+          } else {
+            Alert.alert(
+              "Error",
+              "Your account is blocked. Please contact support to unblock your account."
+            );
+            router.push("/Screens/Misc/ContactUsScreen");
+          }
         } else if (response.data.role_id === 3) {
           router.push("/Screens/NGO/Home/NgoHomeScreen");
         } else if (response.data.role_id === 1) {

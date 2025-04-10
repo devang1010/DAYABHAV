@@ -162,6 +162,53 @@ const UserDetailsPage = () => {
     );
   };
 
+  // Handle user block/unblock
+  const handleToggleBlock = async () => {
+    const action = userData.blocked === 1 ? "unblock" : "block";
+    const confirmMessage = `Are you sure you want to ${action} this user?`;
+    
+    Alert.alert(
+      `${action.charAt(0).toUpperCase() + action.slice(1)} User`,
+      confirmMessage,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: action.charAt(0).toUpperCase() + action.slice(1),
+          style: action === "block" ? "destructive" : "default",
+          onPress: async () => {
+            try {
+              const endpoint = userData.blocked === 1 
+                ? `${API_BASE_URL}/User/unblockuser.php`
+                : `${API_BASE_URL}/User/blockuser.php`;
+                
+              const response = await axios.post(endpoint, {
+                user_id: user_id
+              });
+
+              if (response.data.success) {
+                // Update local state to reflect the change
+                setUserData({
+                  ...userData,
+                  blocked: userData.blocked === 1 ? 0 : 1
+                });
+                
+                Alert.alert(
+                  "Success", 
+                  response.data.message
+                );
+              } else {
+                Alert.alert("Error", response.data.message);
+              }
+            } catch (error) {
+              console.error(`Error ${action}ing user:`, error);
+              Alert.alert("Error", `Something went wrong. Please try again.`);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   // Donation Item Component
   const DonationItem = ({ item }) => {
     const normalizedStatus = item.status ? item.status.toLowerCase() : "";
@@ -256,7 +303,6 @@ const UserDetailsPage = () => {
         </TouchableOpacity>
       </View>
 
-      {/* Rest of the component remains the same */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {userData && (
           <View style={styles.userProfileCard}>
@@ -269,6 +315,13 @@ const UserDetailsPage = () => {
               <View style={styles.userMainInfo}>
                 <Text style={styles.userName}>{userData.username}</Text>
                 <Text style={styles.userEmail}>{userData.email}</Text>
+                
+                {/* Account status indicator */}
+                {userData.blocked === 1 && (
+                  <View style={styles.blockedBadge}>
+                    <Text style={styles.blockedBadgeText}>Blocked</Text>
+                  </View>
+                )}
               </View>
             </View>
 
@@ -320,14 +373,35 @@ const UserDetailsPage = () => {
           )}
         </View>
 
-        {/* Delete Account Button */}
-        <TouchableOpacity
-          style={styles.deleteAccountButton}
-          onPress={handleDeleteUser}
-        >
-          <MaterialIcons name="delete-forever" size={24} color="#fff" />
-          <Text style={styles.deleteAccountButtonText}>Delete User</Text>
-        </TouchableOpacity>
+        {/* Action Buttons Container */}
+        <View style={styles.actionButtonsContainer}>
+          {/* Block/Unblock Button */}
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              userData?.blocked === 1 ? styles.unblockButton : styles.blockButton
+            ]}
+            onPress={handleToggleBlock}
+          >
+            <MaterialIcons 
+              name={userData?.blocked === 1 ? "lock-open" : "block"} 
+              size={24} 
+              color="#fff" 
+            />
+            <Text style={styles.actionButtonText}>
+              {userData?.blocked === 1 ? "Unblock User" : "Block User"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Delete Account Button */}
+          <TouchableOpacity
+            style={[styles.actionButton, styles.deleteButton]}
+            onPress={handleDeleteUser}
+          >
+            <MaterialIcons name="delete-forever" size={24} color="#fff" />
+            <Text style={styles.actionButtonText}>Delete User</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -335,7 +409,7 @@ const UserDetailsPage = () => {
 
 export default UserDetailsPage;
 
-// Styles remain exactly the same as in the previous implementation
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -439,16 +513,6 @@ const styles = StyleSheet.create({
     color: "#7f8c8d",
     marginBottom: 10,
   },
-  userInfoRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    // marginTop: 5,
-  },
-  userInfoText: {
-    marginLeft: 10,
-    fontSize: 16,
-    color: "#2c3e50",
-  },
   donationStatsCard: {
     backgroundColor: "#3498db",
     borderRadius: 15,
@@ -480,43 +544,6 @@ const styles = StyleSheet.create({
     color: "#2c3e50",
     marginBottom: 15,
   },
-  donationItem: {
-    backgroundColor: "#ffffff",
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  donationHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-  },
-  donationTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#2c3e50",
-  },
-  donationDate: {
-    fontSize: 14,
-    color: "#7f8c8d",
-  },
-  donationDetails: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  donationQuantity: {
-    fontSize: 16,
-    color: "#2ecc71",
-  },
-  donationLocation: {
-    fontSize: 16,
-    color: "#3498db",
-  },
   loadingText: {
     textAlign: "center",
     color: "#7f8c8d",
@@ -528,21 +555,52 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 20,
   },
-  deleteAccountButton: {
+  // Action buttons styles
+  actionButtonsContainer: {
+    marginTop: 20,
+    gap: 12,
+  },
+  actionButton: {
     flexDirection: "row",
-    backgroundColor: "#e74c3c",
     padding: 15,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  deleteAccountButtonText: {
+  blockButton: {
+    backgroundColor: "#f39c12", // Orange for block
+  },
+  unblockButton: {
+    backgroundColor: "#27ae60", // Green for unblock
+  },
+  deleteButton: {
+    backgroundColor: "#e74c3c", // Red for delete
+  },
+  actionButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
     marginLeft: 10,
   },
+  // Blocked badge
+  blockedBadge: {
+    backgroundColor: "#e74c3c",
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+  },
+  blockedBadgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+  // Card styles for donation items
   cardContainer: {
     paddingHorizontal: 12,
     marginBottom: 16,
@@ -577,14 +635,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
   },
-  deleteIcon: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'transparent',
-    padding: 5,
-    zIndex: 10,
-  },
   contentContainer: {
     flexDirection: 'row',
     padding: 16,
@@ -613,19 +663,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#888',
     marginBottom: 10,
-  },
-  statusContainer: {
-    alignSelf: 'flex-start',
-  },
-  statusButton: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: 'bold',
   },
   ngoDetailsContainer: {
     padding: 16,
@@ -659,34 +696,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#555',
     flex: 1,
-    fontWeight: '500',
-  },
-  deliveryInstructions: {
-    flexDirection: 'row',
-    backgroundColor: '#E0F0FF',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 0,
-    // alignItems: 'flex-start',
-  },
-  deliveryText: {
-    fontSize: 14,
-    color: '#0066CC',
-    marginLeft: 8,
-    flex: 1,
-  },
-  thankYouContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#E0FFE0',
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 12,
-    alignItems: 'center',
-  },
-  thankYouText: {
-    fontSize: 14,
-    color: '#008800',
-    marginLeft: 8,
     fontWeight: '500',
   },
 });
