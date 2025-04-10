@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { useRouter } from "expo-router";
 import { ScrollView } from "react-native-virtualized-view";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
 
 import Navbar from "@/components/Navbar";
 import WelcomeSectionNgo from "@/components/WelcomeSectionNgo";
@@ -22,139 +23,97 @@ import RecentItemDonation from "@/components/RecentItemDonation";
 import UrgentNeedsCard from "@/components/UrgentNeedsCard";
 import NgoFooter from "@/components/NgoFooter";
 
+const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
+
 const NgoHomeScreen = () => {
-  // const [ngoData, setNgoData] = useState({
-  //   // pendingDonations: 12,
-  //   acceptedDonations: 87,
-  //   completedDonations: 208,
-  // });
-
+  const router = useRouter();
   const [error, setError] = useState(null);
-  const [pendingCount, setPendingCount] = useState(null);
-  useEffect(() => {
-    const fetchNumOfPendingRows = async () => {
-      try {
-        const response = await axios.get(
-          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/homescreenstatspendingreq.php"
-        );
-
-        if (response.data.status === "success") {
-          setPendingCount(response.data.count);
-        } else {
-          console.error("Error: " + response.data.message);
-        }
-      } catch (e) {
-        console.error("API Error: " + e.message);
-      }
-    };
-
-    fetchNumOfPendingRows();
-  }, []);
-
+  const [pendingCount, setPendingCount] = useState(0);
   const [urgentNeeds, setUrgentNeeds] = useState([]);
-  useEffect(() => {
-    const fetchNgoIdAndData = async () => {
-      try {
-        const storedNgoId = await AsyncStorage.getItem("ngo_id");
-
-        if (storedNgoId) {
-          fetchUrgentNeeds(storedNgoId);
-        } else {
-          console.log("NGO ID not found in AsyncStorage");
-        }
-      } catch (error) {
-        console.error("Error fetching NGO ID:", error);
-      }
-    };
-
-    fetchNgoIdAndData();
-  }, []);
-
-  // get recent donations from the inventory
   const [recentDonations, setRecentDonations] = useState([]);
-  useEffect(() => {
-    const fetchRecentDonations = async () => {
-      const ngoId = await AsyncStorage.getItem("ngo_id");
-
-      if (!ngoId) {
-        setError("NGO ID not found");
-        setLoading(false);
+  const [acceptedDonations, setAcceptedDonations] = useState(0);
+  const [completedDonations, setCompletedDonations] = useState(0);
+  const [ngoId, setNgoId] = useState(null);
+  
+  // Function to fetch all data
+  const fetchAllData = useCallback(async () => {
+    try {
+      // Get NGO ID from AsyncStorage
+      const storedNgoId = await AsyncStorage.getItem("ngo_id");
+      setNgoId(storedNgoId);
+      
+      if (!storedNgoId) {
+        console.log("NGO ID not found in AsyncStorage");
         return;
       }
 
+      // Fetch pending donations count
       try {
-        const response = await axios.get(
-          `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/inventory.php?ngo_id=${ngoId}`
+        const pendingResponse = await axios.get(
+          `${API_BASE_URL}/Ngo/homescreenstatspendingreq.php`
         );
+        if (pendingResponse.data.status === "success") {
+          setPendingCount(pendingResponse.data.count);
+        }
+      } catch (e) {
+        console.error("API Error (pending count):", e.message);
+      }
 
-        if (response.data.status === "success") {
-          const sortedRecentDonations = response.data.data.sort((a, b) => {
+      // Fetch urgent needs
+      try {
+        const needsResponse = await axios.get(
+          `${API_BASE_URL}/Ngo/ngorequirements.php?ngo_id=${storedNgoId}`
+        );
+        if (needsResponse.data.status === "success") {
+          setUrgentNeeds(needsResponse.data.data);
+        }
+      } catch (e) {
+        console.error("API Error (urgent needs):", e.message);
+      }
+
+      // Fetch recent donations
+      try {
+        const donationsResponse = await axios.get(
+          `${API_BASE_URL}/Ngo/inventory.php?ngo_id=${storedNgoId}`
+        );
+        if (donationsResponse.data.status === "success") {
+          const sortedRecentDonations = donationsResponse.data.data.sort((a, b) => {
             return new Date(b.created_at) - new Date(a.created_at);
           });
           setRecentDonations(sortedRecentDonations);
-        } else {
-          setError(response.data.message);
-          console.log(response.data.message);
         }
-      } catch (error) {
-        console.error("Api error: " + error);
+      } catch (e) {
+        console.error("API Error (recent donations):", e.message);
       }
-    };
 
-    fetchRecentDonations();
-  }, []);
-
-  const fetchUrgentNeeds = async (ngoId) => {
-    try {
-      const response = await axios.get(
-        `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/ngorequirements.php?ngo_id=${ngoId}`
-      );
-
-      if (response.data.status === "success") {
-        setUrgentNeeds(response.data.data);
-      } else {
-        console.error("Error fetching urgent needs:", response.data.message);
+      // Fetch accepted and completed donations count
+      try {
+        const statusResponse = await axios.post(
+          `${API_BASE_URL}/Ngo/homescreenstatsaccepte_complete.php`,
+          { ngo_id: storedNgoId }
+        );
+        if (statusResponse.data.status === "success") {
+          setAcceptedDonations(statusResponse.data.accepted_count);
+          setCompletedDonations(statusResponse.data.completed_count);
+        }
+      } catch (e) {
+        console.error("API Error (accepted/completed count):", e.message);
       }
     } catch (error) {
-      console.error("API Error:", error);
+      console.error("Error in fetchAllData:", error);
     }
-  };
-
-  const [acceptedDonations, setAcceptedDonations] = useState(0);
-  const [completedDonations, setCompletedDonations] = useState(0);
-  // The number of rows of Accepted and completed requests
-  useEffect(() => {
-    const fetchNumberOfStatusRows = async (ngoIdValue) => {
-      try {
-        const response = await axios.post(
-          `http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/homescreenstatsaccepte_complete.php`,
-          { ngo_id: ngoIdValue }
-        );
-
-        if (response.data.status === "success") {
-          setAcceptedDonations(response.data.accepted_count);
-          setCompletedDonations(response.data.completed_count);
-        }
-      } catch (error) {
-        console.error("API Error:", error);
-      }
-    };
-
-    const fetchNgoId = async () => {
-      try {
-        const storedNgoId = await AsyncStorage.getItem("ngo_id");
-        if (storedNgoId) {
-          fetchNumberOfStatusRows(storedNgoId);
-        } else {
-          console.log("NGO ID not found in AsyncStorage");
-        }
-      } catch (error) {
-        console.error("Error fetching NGO ID:", error);
-      }
-    };
-
-    fetchNgoId();
   }, []);
+
+  // Use useFocusEffect to reload data every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      fetchAllData();
+      
+      return () => {
+        // Cleanup function if needed
+      };
+    }, [fetchAllData])
+  );
 
   const handleRemoveRequirement = (requirementId) => {
     setUrgentNeeds((prevNeeds) =>
@@ -162,10 +121,9 @@ const NgoHomeScreen = () => {
     );
   };
 
-  const router = useRouter();
   return (
     <SafeAreaView style={styles.container}>
-        <Navbar />
+      <Navbar />
       <ScrollView showsVerticalScrollIndicator={false}>
         <WelcomeSectionNgo
           username={"helpingNGO"}
@@ -290,7 +248,7 @@ const NgoHomeScreen = () => {
 
         {/* <NgoFooter /> */}
       </ScrollView>
-        <ConnectWithUs />
+      <ConnectWithUs />
     </SafeAreaView>
   );
 };
@@ -407,7 +365,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
   },
-  // Add these styles to your existing StyleSheet
   emptyStateContainer: {
     alignItems: "center",
     justifyContent: "center",

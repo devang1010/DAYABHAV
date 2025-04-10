@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   View, 
   Text, 
@@ -12,6 +12,7 @@ import { ScrollView } from 'react-native-virtualized-view';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 
 import UserList from "@/components/UserList";
 import NgoList from "@/components/NgoList";
@@ -36,44 +37,55 @@ const Dashboard = () => {
     totalDonors: 0,
     totalNgos: 0
   });
+  const [activeTab, setActiveTab] = useState('Users');
+  const [refresh, setRefresh] = useState(0);
 
-  useEffect(() => {
-    const fetchAllData = async () => {
-      try {
-        const response = await axios.get(
-          "http://192.168.46.163/phpProjects/donationApp_restapi/api/Admin/adminstats.php"
-        )
+  const fetchAllData = async () => {
+    try {
+      const response = await axios.get(
+        "http://192.168.46.163/phpProjects/donationApp_restapi/api/Admin/adminstats.php"
+      );
 
-        if (response.data.status === "success") {
-          setDashboardData({
-            finalDonations: response.data.finalDonationCount,
-            totalItems: response.data.totalItemsCount,
-            totalDonors: response.data.userCount,
-            totalNgos: response.data.ngoCount
-          })
-        } else {
-          console.error("Error:", response.data.message);
-        }
-      } catch (error) {
-        console.error("Api error: ", error);
+      if (response.data.status === "success") {
+        setDashboardData({
+          finalDonations: response.data.finalDonationCount,
+          totalItems: response.data.totalItemsCount,
+          totalDonors: response.data.userCount,
+          totalNgos: response.data.ngoCount
+        });
+      } else {
+        console.error("Error:", response.data.message);
       }
+    } catch (error) {
+      console.error("Api error: ", error);
     }
+  };
 
-    fetchAllData();
-  }, [])
+  // Use useFocusEffect to reload data every time the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      // Fetch dashboard data
+      fetchAllData();
+      
+      // Force refresh of child components by incrementing refresh state
+      setRefresh(prev => prev + 1);
+      
+      return () => {
+        // Cleanup function if needed
+      };
+    }, [])
+  );
 
   const logoutHandler = () => {
     router.replace("/Screens/Auth/LoginScreen");
   };
 
-  const [activeTab, setActiveTab] = useState('Users');
-
   const renderTabContent = () => {
     switch(activeTab) {
       case 'Users':
-        return <UserList />;
+        return <UserList key={`users-${refresh}`} />;
       case 'Ngos':
-        return <NgoList />;
+        return <NgoList key={`ngos-${refresh}`} />;
       default:
         return null;
     }
