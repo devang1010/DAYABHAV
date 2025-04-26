@@ -83,6 +83,8 @@ const NgoList = () => {
                   currentNgos.filter((ngo) => ngo.ngo_id !== ngoId)
                 );
                 Alert.alert("Success", "NGO deleted successfully!");
+
+                router.push("/Screens/ADMIN/Dashboard");
               } else {
                 Alert.alert("Error", response.data.message);
               }

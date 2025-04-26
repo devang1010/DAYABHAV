@@ -84,6 +84,8 @@ const UserList = () => {
                 setDisplayedUsers(updatedDisplayedUsers);
                 
                 Alert.alert("Success", "User deleted successfully!");
+
+                router.replace("/Screens/ADMIN/Dashboard");
               } else {
                 Alert.alert("Error", response.data.message);
               }

@@ -23,25 +23,25 @@ import RecentItemDonation from "@/components/RecentItemDonation";
 import UrgentNeedsCard from "@/components/UrgentNeedsCard";
 import NgoFooter from "@/components/NgoFooter";
 
-const API_BASE_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api";
+const API_BASE_URL =
+  "http://192.168.46.163/phpProjects/donationApp_restapi/api";
 
 const NgoHomeScreen = () => {
   const router = useRouter();
-  const [error, setError] = useState(null);
   const [pendingCount, setPendingCount] = useState(0);
   const [urgentNeeds, setUrgentNeeds] = useState([]);
   const [recentDonations, setRecentDonations] = useState([]);
   const [acceptedDonations, setAcceptedDonations] = useState(0);
   const [completedDonations, setCompletedDonations] = useState(0);
   const [ngoId, setNgoId] = useState(null);
-  
+
   // Function to fetch all data
   const fetchAllData = useCallback(async () => {
     try {
       // Get NGO ID from AsyncStorage
       const storedNgoId = await AsyncStorage.getItem("ngo_id");
       setNgoId(storedNgoId);
-      
+
       if (!storedNgoId) {
         console.log("NGO ID not found in AsyncStorage");
         return;
@@ -77,9 +77,11 @@ const NgoHomeScreen = () => {
           `${API_BASE_URL}/Ngo/inventory.php?ngo_id=${storedNgoId}`
         );
         if (donationsResponse.data.status === "success") {
-          const sortedRecentDonations = donationsResponse.data.data.sort((a, b) => {
-            return new Date(b.created_at) - new Date(a.created_at);
-          });
+          const sortedRecentDonations = donationsResponse.data.data.sort(
+            (a, b) => {
+              return new Date(b.created_at) - new Date(a.created_at);
+            }
+          );
           setRecentDonations(sortedRecentDonations);
         }
       } catch (e) {
@@ -108,7 +110,7 @@ const NgoHomeScreen = () => {
   useFocusEffect(
     useCallback(() => {
       fetchAllData();
-      
+
       return () => {
         // Cleanup function if needed
       };
@@ -230,7 +232,7 @@ const NgoHomeScreen = () => {
               <Text style={styles.seeAllText}>Edit</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.needsContainer}>  
+          <View style={styles.needsContainer}>
             <FlatList
               data={urgentNeeds}
               renderItem={({ item }) => (
@@ -455,7 +457,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 8,
-    marginBottom: 60
+    marginBottom: 60,
   },
   needItem: {
     backgroundColor: "#F5F7FA",

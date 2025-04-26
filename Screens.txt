@@ -11,7 +11,7 @@ Tab section at the end of the screen
     2> Ngos
 
 
-NAVBAR STICK ✅, TABS FOR CONNECT US ✅, EXPIRE DATE OF DONATION ✅, CONTACT NUMBER -> PHONE ✅, FORGOT PASSWORD, 
+NAVBAR STICK ✅, TABS FOR CONNECT US ✅, EXPIRE DATE OF DONATION ✅, CONTACT NUMBER -> PHONE ✅, FORGOT PASSWORD ✅, 
 PHONENUMBER TO CHAT ✅
 User block button ✅
 ADMIN PERTICULAR USER AND NGO SCREEN WHICH INCLUDES ALL THE DETAILS ✅, PAGINATION ✅, SEARCH BAR FOR BOTH USER AND NGO ✅, 
@@ -21,10 +21,6 @@ List of all the users with delete, Block button
 
 -------------------------------------NgoScreen ✅--------------------------------
 List of all the ngos with deletion, Block button
-
---------------------------------------ItemScreen--------------------------------
-List of all the items based on the status and it will be sorted by pending, accepted, completed with delete button for only pending status
-
 
 ____________________________________________________________________________________
 -----------------------------------AboutUs Screen ✅ ------------------------------------
@@ -239,3 +235,12 @@ User will be rewarded if their donation is accepted
 More Pictures will be shown of the donation to the ngo 
 Notification will be added using firebase
 user and ngo can upload their profile picture to show on the application 
+
+
+https://web.archive.org/web/20240423024802/https://vuldex.com/
+https://vuldex.com/service/laravel-assessment/#aanleveren
+mohit@itechnotree.com
+
+https://thecyberx.company/wp-admin/
+User: devangt101003@gmail.com
+Pass: BrpP#O8Av@oNwsQ9%5

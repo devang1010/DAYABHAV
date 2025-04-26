@@ -20,7 +20,15 @@ const NgoRequirements = () => {
         );
         
         if (response.data.status === "success") {
-          setRequirements(response.data.data);
+          // Sort requirements by priority (highest to lowest)
+          const sortedRequirements = response.data.data.sort((a, b) => {
+            // Handle cases where priority might not exist in older records
+            const priorityA = a.priority ? parseInt(a.priority) : 1;
+            const priorityB = b.priority ? parseInt(b.priority) : 1;
+            return priorityB - priorityA; // Descending order (5 to 1)
+          });
+          
+          setRequirements(sortedRequirements);
         } else {
           Alert.alert("Error", response.data.message);
         }
@@ -38,29 +46,29 @@ const NgoRequirements = () => {
   return (
     <SafeAreaView style={styles.mainContainer}>
       <Navbar />
-    <ScrollView >
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.title}>Urgent NGO Requirements</Text>
-        
-        {loading ? (
-          <Text style={styles.loadingText}>Loading...</Text>
-        ) : (
-          <View style={styles.cardsContainer}>
-            {requirements.map((item) => (
-              <NgoRequirementUserScreen 
-                key={item.requirement_id.toString()} 
-                item={item} 
-              />
-            ))}
-            
-            {requirements.length === 0 && (
-              <Text style={styles.noDataText}>No requirements available</Text>
-            )}
-          </View>
-        )}
-        
+      <ScrollView>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.title}>Urgent NGO Requirements</Text>
+          
+          {loading ? (
+            <Text style={styles.loadingText}>Loading...</Text>
+          ) : (
+            <View style={styles.cardsContainer}>
+              {requirements.map((item) => (
+                <NgoRequirementUserScreen 
+                  key={item.requirement_id.toString()} 
+                  item={item} 
+                />
+              ))}
+              
+              {requirements.length === 0 && (
+                <Text style={styles.noDataText}>No requirements available</Text>
+              )}
+            </View>
+          )}
+          
+        </ScrollView>
       </ScrollView>
-    </ScrollView>
       <Footer />
     </SafeAreaView>
   );

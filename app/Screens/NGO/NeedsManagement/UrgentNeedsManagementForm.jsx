@@ -14,12 +14,14 @@ const API_URL = "http://192.168.46.163/phpProjects/donationApp_restapi/api/Ngo/n
 const UrgentNeedsManagementForm = () => {
   const [itemName, setItemName] = useState('');
   const [quantity, setQuantity] = useState('');
+  const [priority, setPriority] = useState('1'); // Default priority is 1 (lowest)
   const [ngoId, setNgoId] = useState(null);
   const [ngoName, setNgoName] = useState(null);
   const [loading, setLoading] = useState(false);
   
   // Refs for input fields
   const quantityInputRef = useRef(null);
+  const priorityInputRef = useRef(null);
 
   useEffect(() => {
     const fetchNgoId = async () => {
@@ -47,12 +49,19 @@ const UrgentNeedsManagementForm = () => {
       return Alert.alert("Error", "NGO ID not found. Please log in again.");
     }
 
+    // Validate priority (should be between 1 and 5)
+    const priorityNum = parseInt(priority);
+    if (isNaN(priorityNum) || priorityNum < 1 || priorityNum > 5) {
+      return Alert.alert("Error", "Priority must be a number between 1 and 5.");
+    }
+
     setLoading(true);
     try {
       const response = await axios.post(API_URL, {
         ngo_id: ngoId,
         item_name: itemName.trim(),
         quantity: parseInt(quantity),
+        priority: priorityNum,
         ngoname: ngoName.trim(),
       });
 
@@ -60,6 +69,7 @@ const UrgentNeedsManagementForm = () => {
         Alert.alert("Success", "Urgent need added successfully!");
         setItemName('');
         setQuantity('');
+        setPriority('1'); // Reset to default
         Keyboard.dismiss();
       } else {
         Alert.alert("Error", response.data.message);
@@ -76,6 +86,13 @@ const UrgentNeedsManagementForm = () => {
   const focusQuantityInput = () => {
     if (quantityInputRef.current) {
       quantityInputRef.current.focus();
+    }
+  };
+
+  // Function to focus on priority input
+  const focusPriorityInput = () => {
+    if (priorityInputRef.current) {
+      priorityInputRef.current.focus();
     }
   };
 
@@ -131,9 +148,29 @@ const UrgentNeedsManagementForm = () => {
                 value={quantity}
                 onChangeText={setQuantity}
                 keyboardType="numeric"
-                returnKeyType="done"
-                onSubmitEditing={handleSubmit}
+                returnKeyType="next"
+                blurOnSubmit={false}
+                onSubmitEditing={focusPriorityInput}
               />
+            </View>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Priority (1-5)</Text>
+              <View style={styles.priorityContainer}>
+                <TextInput
+                  ref={priorityInputRef}
+                  style={styles.input}
+                  placeholder="Priority level (1-5)"
+                  placeholderTextColor="#A0AEC0"
+                  value={priority}
+                  onChangeText={setPriority}
+                  keyboardType="numeric"
+                  returnKeyType="done"
+                  maxLength={1}
+                  onSubmitEditing={handleSubmit}
+                />
+                <Text style={styles.priorityHelper}>5 = Highest Priority, 1 = Lowest Priority</Text>
+              </View>
             </View>
             
             <View style={styles.inputGroup}>
@@ -238,6 +275,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#2D3748',
     backgroundColor: '#FFFFFF',
+  },
+  priorityContainer: {
+    width: '100%',
+  },
+  priorityHelper: {
+    fontSize: 14,
+    color: '#718096',
+    marginTop: 8,
+    fontStyle: 'italic',
   },
   disabledInput: {
     backgroundColor: '#F7FAFC',
