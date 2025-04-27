@@ -69,7 +69,15 @@ const LoginScreen = () => {
             router.push("/Screens/Misc/ContactUsScreen");
           }
         } else if (response.data.role_id === 3) {
-          router.push("/Screens/NGO/Home/NgoHomeScreen");
+          if (response.data.blocked === 0) {
+            router.push("/Screens/NGO/Home/NgoHomeScreen");
+          } else {
+            Alert.alert(
+              "Error",
+              "Your account is blocked. Please contact support to unblock your account."
+            );
+            router.push("/Screens/Misc/ContactUsScreen");
+          }
         } else if (response.data.role_id === 1) {
           router.push("/Screens/ADMIN/Dashboard");
         } 

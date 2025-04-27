@@ -124,6 +124,53 @@ const NgoDetailsPage = () => {
     ]);
   };
 
+  // Handle block/unblock NGO
+  const handleToggleBlock = async () => {
+    const action = ngoData.blocked === 1 ? "unblock" : "block";
+    const confirmMessage = `Are you sure you want to ${action} this NGO?`;
+    
+    Alert.alert(
+      `${action.charAt(0).toUpperCase() + action.slice(1)} NGO`,
+      confirmMessage,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: action.charAt(0).toUpperCase() + action.slice(1),
+          style: action === "block" ? "destructive" : "default",
+          onPress: async () => {
+            try {
+              const endpoint = ngoData.blocked === 1 
+                ? `${API_BASE_URL}/Ngo/unblockngo.php`
+                : `${API_BASE_URL}/Ngo/blockngo.php`;
+                
+              const response = await axios.post(endpoint, {
+                ngo_id: ngo_id
+              });
+
+              if (response.data.success) {
+                // Update local state to reflect the change
+                setNgoData({
+                  ...ngoData,
+                  blocked: ngoData.blocked === 1 ? 0 : 1
+                });
+                
+                Alert.alert(
+                  "Success", 
+                  `NGO successfully ${action}ed.`
+                );
+              } else {
+                Alert.alert("Error", response.data.message || "Failed to update NGO status.");
+              }
+            } catch (error) {
+              console.error(`Error ${action}ing NGO:`, error);
+              Alert.alert("Error", `Something went wrong. Please try again.`);
+            }
+          },
+        },
+      ]
+    );
+  };
+
   // Fetch donation statistics
   useEffect(() => {
     const fetchNumberOfStatusRows = async (ngo_id) => {
@@ -289,6 +336,13 @@ const NgoDetailsPage = () => {
               <View style={styles.userMainInfo}>
                 <Text style={styles.userName}>{ngoData.ngoname}</Text>
                 <Text style={styles.userEmail}>{ngoData.email}</Text>
+                
+                {/* Account status indicator */}
+                {ngoData.blocked === 1 && (
+                  <View style={styles.blockedBadge}>
+                    <Text style={styles.blockedBadgeText}>Blocked</Text>
+                  </View>
+                )}
               </View>
             </View>
 
@@ -340,16 +394,35 @@ const NgoDetailsPage = () => {
           )}
         </View>
 
-        {/* Delete Account Button */}
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
-                <LinearGradient
-                  colors={['#FF6347', '#FF4500']}
-                  style={styles.gradientButton}
-                >
-                  <Ionicons name="trash-outline" size={24} color="#fff" />
-                  <Text style={styles.buttonText}>Delete Profile</Text>
-                </LinearGradient>
-              </TouchableOpacity>
+        {/* Action Buttons Container */}
+        <View style={styles.actionButtonsContainer}>
+          {/* Block/Unblock Button */}
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              ngoData?.blocked === 1 ? styles.unblockButton : styles.blockButton
+            ]}
+            onPress={handleToggleBlock}
+          >
+            <MaterialIcons 
+              name={ngoData?.blocked === 1 ? "lock-open" : "block"} 
+              size={24} 
+              color="#fff" 
+            />
+            <Text style={styles.actionButtonText}>
+              {ngoData?.blocked === 1 ? "Unblock NGO" : "Block NGO"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Delete Account Button */}
+          <TouchableOpacity
+            style={[styles.actionButton, styles.deleteButton]}
+            onPress={handleDelete}
+          >
+            <MaterialIcons name="delete-forever" size={24} color="#fff" />
+            <Text style={styles.actionButtonText}>Delete NGO</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -357,7 +430,7 @@ const NgoDetailsPage = () => {
 
 export default NgoDetailsPage;
 
-// Reuse styles from UserDetailsPage
+// Styles for the component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -461,6 +534,19 @@ const styles = StyleSheet.create({
     color: "#7f8c8d",
     marginBottom: 10,
   },
+  // Blocked badge
+  blockedBadge: {
+    backgroundColor: "#e74c3c",
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    alignSelf: "flex-start",
+  },
+  blockedBadgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
   donationStatsCard: {
     backgroundColor: "#3498db",
     borderRadius: 15,
@@ -503,102 +589,41 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 20,
   },
+  // Action buttons styles
+  actionButtonsContainer: {
+    marginTop: 20,
+    gap: 12,
+  },
+  actionButton: {
+    flexDirection: "row",
+    padding: 15,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  blockButton: {
+    backgroundColor: "#f39c12", // Orange for block
+  },
+  unblockButton: {
+    backgroundColor: "#27ae60", // Green for unblock
+  },
+  deleteButton: {
+    backgroundColor: "#e74c3c", // Red for delete
+  },
+  actionButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+    marginLeft: 10,
+  },
   cardContainer: {
     paddingHorizontal: 12,
     marginBottom: 16,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 4,
-    overflow: "hidden",
-    position: "relative",
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
-  acceptedCard: {
-    borderLeftWidth: 4,
-    borderLeftColor: "#4682B4",
-  },
-  statusBadge: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    zIndex: 10,
-  },
-  statusBadgeText: {
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  contentContainer: {
-    flexDirection: "row",
-    padding: 16,
-    alignItems: "center",
-  },
-  image: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-    marginRight: 16,
-    borderWidth: 1,
-    borderColor: "#EFEFEF",
-    backgroundColor: "#f9f9f9",
-    resizeMode: "contain",
-  },
-  details: {
-    flex: 1,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 4,
-  },
-  date: {
-    fontSize: 12,
-    color: "#888",
-    marginBottom: 10,
-  },
-  ngoDetailsContainer: {
-    padding: 16,
-    backgroundColor: "#f5f5f5",
-    borderTopWidth: 1,
-    borderTopColor: "#f0f0f0",
-  },
-  ngoHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  ngoTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#4682B4",
-    marginLeft: 8,
-  },
-  ngoDetailRow: {
-    flexDirection: "row",
-    marginBottom: 8,
-    flexWrap: "wrap",
-  },
-  ngoLabel: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#555",
-    width: 100,
-  },
-  ngoValue: {
-    fontSize: 14,
-    color: "#555",
-    flex: 1,
-    fontWeight: "500",
   },
   card: {
     backgroundColor: COLORS.surface,
@@ -676,28 +701,9 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     flex: 1,
   },
-  deleteButton: {
-    marginTop: 20,
-  },
-  gradientButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    elevation: 3,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 10,
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#4682B4',
-    textAlign: 'center',
-    marginTop: 20,
+    alignItems: 'center',
   },
 });
