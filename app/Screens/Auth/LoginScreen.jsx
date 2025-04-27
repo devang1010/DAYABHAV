@@ -51,6 +51,7 @@ const LoginScreen = () => {
         await AsyncStorage.setItem("user_id", String(response.data.user_id));
         await AsyncStorage.setItem("role_id", String(response.data.role_id));
         await AsyncStorage.setItem("username", String(response.data.username));
+        await AsyncStorage.setItem("city", String(response.data.city));
 
         // Store Ngo data
         await AsyncStorage.setItem("ngo_id", String(response.data.ngo_id));

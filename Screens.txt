@@ -227,7 +227,7 @@ then the user can see that his donation is accepted or completed ✅
 
 
 ---------------------------------------------Future Updates-------------------------------------------
-Ngos will be shown to user according to their location
+Ngos will be shown to user according to their location ✅
 Anonymous Donation
 Ngos will be varified before they are approved to act as the ngo on this application
 User and ngo can chat
